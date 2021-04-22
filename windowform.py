@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk
 from tkinter import filedialog
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
 from matplotlib.figure import Figure
 from back import backend
 import numpy as np
@@ -14,7 +14,7 @@ class windowform1():
     window,window2,window3 = 0 ,0 ,0
     mainMenu = 0
     fileMenu = 0
-    canvas,canvas2 = 0, 0
+    canvas = FigureCanvasTkAgg(plt.figure(), master = window)
     label1 = 0
     work = 0
     button = 0
@@ -24,58 +24,73 @@ class windowform1():
         
         self.window = tk.Tk()
         self.window.title('control')
-        self.window.geometry("800x800+200+100")
-##        self.window.resizable(False, False)
+        self.window.geometry("1800x900+50+50")
+        self.window.resizable(False, False)
         self.mainMenu = tk.Menu(self.window)
         self.window.config(menu = self.mainMenu)
         self.fileMenu = tk.Menu(self.mainMenu)
         self.mainMenu.add_cascade(label = "파일", menu = self.fileMenu)
         self.fileMenu.add_command(label = "열기", command = self.open_file)
-        self.text = tk.StringVar()
+        self.fileMenu.add_command(label = "끝내기", command = self.exit_file)
+        self.text = tk.StringVar(self.window)
         self.text.set("file = None")
-        self.file_name_label()       
+        self.file_name_label()
+        
 
     def open_file(self):
         self.filename = filedialog.askopenfilenames(initialdir = "E:/Images", title = "파일선택",
                                                filetypes = (("csv files", "*.csv"), ("all files", "*.*")))
         self.text.set("file = " + str(self.filename))
+        self.work.loadFile(list(self.filename)[0])
         self.combobox()
-        self.draw_figure(self.canvas,plt.figure(),self.window)
+        self.text_input(self.window)
+        self.button_input(self.window)
 
+    def exit_file(self):
+        self.window.quit()
+        self.window.destroy()
+        
     def file_name_label(self):
         self.label1 = tk.Label(self.window, textvariable = self.text)
-        self.label1.pack()
+        self.label1.place(x=10,y=0)
         
     def combobox(self):
-        
         values=[str(i)+ "" for i in range(0, self.work.columnDataLength)] 
         self.combobox=tk.ttk.Combobox(self.window, height=15, values=values)
         self.combobox.set(0)
-        self.combobox.pack(padx = 1, pady = 20)
+        self.combobox.place(x=60,y=120)
+        self.label2 = tk.Label(self.window, text = "< Data select > ")
+        self.label2.place(x = 100, y = 90)
         self.combobox.bind("<<ComboboxSelected>>", self.callbackFunc)
 
     def callbackFunc(self,event):
         self.num = int(self.combobox.get())
-        self.work.run(self.num)
-        self.window2 = tk.Tk()
-        self.window2.geometry("1500x800")
-        self.window2.title(str(self.num)+" graph")
-        self.text_input(self.window2)
-        self.button_input(self.window2)
-        self.draw_figure(self.canvas, self.work.fig, self.window2)
-        
+        self.work.slctData(self.num)
+        self.work.initData()
+
+        self.work.slctBySize()
+        self.work.ifft()
+        self.work.saveFig()       
+        self.draw_figure(self.canvas, self.work.fig, self.window)
+
 
     def draw_figure(self,canvas,fig,window):
+        self._clear(self.canvas)
         self.canvas = FigureCanvasTkAgg(fig, master = window)
         self.canvas.get_tk_widget().pack(expand = 1)
-
+        
+    def _clear(self, canvas):
+        canvas.get_tk_widget().forget()
+        
     def text_input(self,window):
-        self.text_box = tk.Entry(window, width = 30)
-        self.text_box.pack(expand = 1)
+        self.label2 = tk.Label(self.window, text = "< Range select > ")
+        self.label2.place(x = 95, y = 200)
+        self.text_box = tk.Entry(window, width = 22)
+        self.text_box.place(x=60,y=230)
 
     def button_input(self,window):
         self.button = tk.Button(window, text = "확인",command = self.confirm)
-        self.button.pack(expand = 1)
+        self.button.place(x=230,y=230)
 
     def confirm(self):
         start_end_list = list(map(int, self.text_box.get().split(',')))
