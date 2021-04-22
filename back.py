@@ -35,8 +35,7 @@ class backend:
 
         self.slctBySize()
         self.ifft()
-        self.show()
-        
+
 
     # 파일 불러오기
     def loadFile(self, _path):
