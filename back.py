@@ -21,6 +21,7 @@ class backend:
     phase                 = 0 # 원 데이터의 위상 스펙트럼
 
     result                = 0 # 가공한 데이터 저장
+    fig                   = 0 # 그래프 저장할 객체
     
     
 
@@ -35,7 +36,9 @@ class backend:
 
         self.slctBySize()
         self.ifft()
-
+        self.saveFig()
+        self.show()
+        
 
     # 파일 불러오기
     def loadFile(self, _path):
@@ -61,15 +64,28 @@ class backend:
 
     # 진폭순으로 선택
     def slctBySize(self , _N = 3):
+        
+        hlfLng = len( self.amplt )
         self.result = self.fftData
-        hlfLng = len( self.amplt ) 
         idxSortAmp = self.amplt.argsort()
         N = idxSortAmp[-_N]
         
-        self.result[ self.fftData < self.fftData[N] ] = 0
+        self.result[ abs(self.fftData) < abs(self.fftData[N]) ] = 0
 
+
+    # 밴드 패스 필터
+    def bandPassFltr(self):
+        pass
+
+    # 푸리에 역변환
     def ifft(self):
-        self.result = np.fft.ifft( self.result )
+        self.result = np.fft.ifft( self.result ) * self.dataLngth
+
+    def saveFig(self):
+        self.fig = Figure( figsize=(10,7), dpi = 100 )
+
+        plt1 = self.fig.add_subplot(1, 1, 1)
+        plt1.plot(self.orgnlData)
         
         
         
@@ -90,7 +106,8 @@ class backend:
         plt.stem( self.phase )
 
         plt.subplot(3, 2, 2)
-        plt.plot( self.result )
+        plt.plot( self.orgnlData )
+        plt.plot( self.result , 'r' )
         
         plt.show()
 
