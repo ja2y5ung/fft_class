@@ -19,6 +19,7 @@ class windowform1():
     work = 0
     button = 0
     
+    
     def __init__(self):
         self.work = backend()
         
@@ -55,7 +56,8 @@ class windowform1():
         self.label1.place(x=10,y=0)
         
     def combobox(self):
-        values=[str(i)+ "" for i in range(0, self.work.columnDataLength)] 
+        values=[str(i)+ ' <' + str(self.work.row_name[i]) + '>'\
+                for i in range(0, self.work.columnDataLength)] 
         self.combobox=tk.ttk.Combobox(self.window, height=15, values=values)
         self.combobox.set(0)
         self.combobox.place(x=60,y=120)
@@ -64,7 +66,7 @@ class windowform1():
         self.combobox.bind("<<ComboboxSelected>>", self.callbackFunc)
 
     def callbackFunc(self,event):
-        self.num = int(self.combobox.get())
+        self.num = int(self.combobox.get().split(' ')[0])
         self.work.slctData(self.num)
         self.work.initData()
 
