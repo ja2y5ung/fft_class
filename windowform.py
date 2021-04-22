@@ -1,8 +1,9 @@
 import tkinter as tk
 import tkinter.ttk
+from tkinter import filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from fft_class0419 import Work
+from fft_class0421 import Work
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -12,44 +13,75 @@ class windowform1():
     combobox = 0
     window = 0
     window2 = 0
+    window3 = 0
     canvas = 0
+    canvas2 = 0
     work = 0
+    button = 0
     
     def __init__(self):
         self.work = Work()
         
         self.window = tk.Tk()
         self.window.title('control')
-        self.window.geometry("1200x800+200+100")
+        self.window.geometry("600x100+200+100")
         self.window.resizable(False, False)
         self.combobox()
+
+    def open_file():
+
+        filename = filedialog.askopenfilenames(initialdir = "E:/Images", title = "파일선택",
+                                               filetypes = (("jpg files", "*.jpg"), ("all files", "*.*")))
         
+
     def combobox(self):
         values=[str(i)+"" for i in range(0, self.work.data_col)] 
         self.combobox=tk.ttk.Combobox(self.window, height=15, values=values)
         self.combobox.set(0)
-        self.combobox.pack()
+        self.combobox.pack(expand = 1)
         self.combobox.bind("<<ComboboxSelected>>", self.callbackFunc)
-        
+
     def callbackFunc(self,event):
         self.num = int(self.combobox.get())
-        self.work1 = Work(self.num)
+        self.work.run(self.num)
         self.window2 = tk.Tk()
-        self.window2.geometry("1500x700")
-        self.window2.title('control')
-        self.draw_figure(self.work1.fig)
+        self.window2.geometry("1500x800")
+        self.window2.title(str(self.num)+" graph")
+        self.text_input(self.window2)
+        self.button_input(self.window2)
+        self.draw_figure(self.canvas, self.work.fig, self.window2)
+        
 
-    def draw_figure(self,fig):
-        self.canvas = FigureCanvasTkAgg(fig, master = self.window2)
-        self.canvas.get_tk_widget().pack()
+    def draw_figure(self,canvas,fig,window):
+        self.canvas = FigureCanvasTkAgg(fig, master = window)
+        self.canvas.get_tk_widget().pack(expand = 1)
 
+    def text_input(self,window):
+        self.text_box = tk.Entry(window, width = 30)
+        self.text_box.pack(expand = 1)
+
+    def button_input(self,window):
+        self.button = tk.Button(window, text = "확인",command = self.confirm)
+        self.button.pack(expand = 1)
+
+    def confirm(self):
+        start_end_list = list(map(int, self.text_box.get().split(',')))
+        print(start_end_list)
+        self.work.run(self.num,start_end_list[0],start_end_list[1],\
+                      start_end_list[2],start_end_list[3])
+
+        self.window3 = tk.Tk()
+        self.window3.geometry("1500x800")
+        self.window3.title(str(self.num)+" graph")
+        self.draw_figure(self.canvas2, self.work.fig2, self.window3)
+       
     def main_loop(self):
         self.window.mainloop()
 
 
 window1 = windowform1()
 window1.main_loop()
-##
+
 
 
 
