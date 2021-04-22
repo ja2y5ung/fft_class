@@ -27,6 +27,7 @@ class backend:
 
 
     def __init__(self):
+##        self.run('Normal_test.csv',0)
         pass
 
     def run(self,filename,num):
@@ -43,6 +44,7 @@ class backend:
     # 파일 불러오기
     def loadFile(self, _path):
         self.file = np.genfromtxt( _path, delimiter = ',', dtype = float, encoding = 'UTF-8')
+        self.row_name = np.genfromtxt( _path, delimiter = ',', dtype = str)[0]
         self.columnDataLength = self.file.shape[1]
 
     # 파일 안에서 데이터 선택하기
