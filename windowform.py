@@ -24,22 +24,23 @@ class windowform1():
         
         self.window = tk.Tk()
         self.window.title('control')
-        self.window.geometry("600x600+200+100")
-        self.window.resizable(False, False)
+        self.window.geometry("800x800+200+100")
+##        self.window.resizable(False, False)
         self.mainMenu = tk.Menu(self.window)
         self.window.config(menu = self.mainMenu)
         self.fileMenu = tk.Menu(self.mainMenu)
         self.mainMenu.add_cascade(label = "파일", menu = self.fileMenu)
         self.fileMenu.add_command(label = "열기", command = self.open_file)
         self.text = tk.StringVar()
-        self.text.set("None")
+        self.text.set("file = None")
         self.file_name_label()       
 
     def open_file(self):
         self.filename = filedialog.askopenfilenames(initialdir = "E:/Images", title = "파일선택",
                                                filetypes = (("csv files", "*.csv"), ("all files", "*.*")))
-        self.text.set(self.filename)
+        self.text.set("file = " + str(self.filename))
         self.combobox()
+        self.draw_figure(self.canvas,plt.figure(),self.window)
 
     def file_name_label(self):
         self.label1 = tk.Label(self.window, textvariable = self.text)
