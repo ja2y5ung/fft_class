@@ -14,6 +14,7 @@ class windowform1():
     window = 0
     window2 = 0
     window3 = 0
+    mainMenu = 0
     canvas = 0
     canvas2 = 0
     work = 0
@@ -26,13 +27,18 @@ class windowform1():
         self.window.title('control')
         self.window.geometry("600x100+200+100")
         self.window.resizable(False, False)
+        self.mainMenu = Menu(self.window)
+        self.window.config(menu = self.mainMenu)
+
         self.combobox()
 
     def open_file():
 
         filename = filedialog.askopenfilenames(initialdir = "E:/Images", title = "파일선택",
-                                               filetypes = (("jpg files", "*.jpg"), ("all files", "*.*")))
+                                               filetypes = (("csv files", "*.csv"), ("all files", "*.*")))
         
+
+    
 
     def combobox(self):
         values=[str(i)+"" for i in range(0, self.work.data_col)] 
