@@ -11,12 +11,11 @@ import matplotlib.pyplot as plt
 class windowform1():
     num = 0
     combobox = 0
-    window = 0
-    window2 = 0
-    window3 = 0
+    window,window2,window3 = 0 ,0 ,0
     mainMenu = 0
-    canvas = 0
-    canvas2 = 0
+    fileMenu = 0
+    canvas,canvas2 = 0, 0
+    label1 = 0
     work = 0
     button = 0
     
@@ -25,26 +24,32 @@ class windowform1():
         
         self.window = tk.Tk()
         self.window.title('control')
-        self.window.geometry("600x100+200+100")
+        self.window.geometry("600x600+200+100")
         self.window.resizable(False, False)
-        self.mainMenu = Menu(self.window)
+        self.mainMenu = tk.Menu(self.window)
         self.window.config(menu = self.mainMenu)
-
+        self.fileMenu = tk.Menu(self.mainMenu)
+        self.mainMenu.add_cascade(label = "파일", menu = self.fileMenu)
+        self.fileMenu.add_command(label = "열기", command = self.open_file)
+        self.text = tk.StringVar()
+        self.text.set("None")
+        self.file_name_label()       
         self.combobox()
 
-    def open_file():
-
-        filename = filedialog.askopenfilenames(initialdir = "E:/Images", title = "파일선택",
+    def open_file(self):
+        self.filename = filedialog.askopenfilenames(initialdir = "E:/Images", title = "파일선택",
                                                filetypes = (("csv files", "*.csv"), ("all files", "*.*")))
+        self.text.set(self.filename)
+             
+    def file_name_label(self):
+        self.label1 = tk.Label(self.window, textvariable = self.text)
+        self.label1.pack()
         
-
-    
-
     def combobox(self):
-        values=[str(i)+"" for i in range(0, self.work.data_col)] 
+        values=[str(i)+ "" for i in range(0, self.work.data_col)] 
         self.combobox=tk.ttk.Combobox(self.window, height=15, values=values)
         self.combobox.set(0)
-        self.combobox.pack(expand = 1)
+        self.combobox.pack(padx = 1, pady = 20)
         self.combobox.bind("<<ComboboxSelected>>", self.callbackFunc)
 
     def callbackFunc(self,event):
