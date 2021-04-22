@@ -3,7 +3,7 @@ import tkinter.ttk
 from tkinter import filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from fft_class0421 import Work
+from back import backend
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -20,7 +20,7 @@ class windowform1():
     button = 0
     
     def __init__(self):
-        self.work = Work()
+        self.work = backend()
         
         self.window = tk.Tk()
         self.window.title('control')
@@ -34,19 +34,20 @@ class windowform1():
         self.text = tk.StringVar()
         self.text.set("None")
         self.file_name_label()       
-        self.combobox()
 
     def open_file(self):
         self.filename = filedialog.askopenfilenames(initialdir = "E:/Images", title = "파일선택",
                                                filetypes = (("csv files", "*.csv"), ("all files", "*.*")))
         self.text.set(self.filename)
-             
+        self.combobox()
+
     def file_name_label(self):
         self.label1 = tk.Label(self.window, textvariable = self.text)
         self.label1.pack()
         
     def combobox(self):
-        values=[str(i)+ "" for i in range(0, self.work.data_col)] 
+        
+        values=[str(i)+ "" for i in range(0, self.work.columnDataLength)] 
         self.combobox=tk.ttk.Combobox(self.window, height=15, values=values)
         self.combobox.set(0)
         self.combobox.pack(padx = 1, pady = 20)
