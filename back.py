@@ -21,17 +21,17 @@ class backend:
     phase                 = 0 # 원 데이터의 위상 스펙트럼
 
     result                = 0 # 가공한 데이터 저장
-    fig                   = 0 # 그래프 저장할 객체
+    fig                   = plt.figure() # 그래프 저장할 객체
     
     
 
 
     def __init__(self):
-        self.run()
+        pass
 
-    def run(self):
-        self.loadFile('Normal_test.csv')
-        self.slctData(1)
+    def run(self,filename,num):
+        self.loadFile(filename)
+        self.slctData(num)
         self.initData()
 
         self.slctBySize()
@@ -109,8 +109,8 @@ class backend:
         plt.plot( self.orgnlData )
         plt.plot( self.result , 'r' )
         
-        plt.show()
-
+##        plt.show()
+##
 
 
 if __name__ == '__main__':
