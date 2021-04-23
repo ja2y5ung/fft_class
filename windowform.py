@@ -15,6 +15,7 @@ class windowform1():
     mainMenu = 0
     fileMenu = 0
     canvas = FigureCanvasTkAgg(plt.figure(), master = window)
+    canvas2 = FigureCanvasTkAgg(plt.figure(), master = window2)
     label1 = 0
     work = 0
     button = 0
@@ -31,6 +32,7 @@ class windowform1():
         self.fileMenu = tk.Menu(self.mainMenu)
         self.mainMenu.add_cascade(label = "파일", menu = self.fileMenu)
         self.fileMenu.add_command(label = "열기", command = self.open_file)
+        self.fileMenu.add_command(label = "저장 하기", command = self.exit_file)
         self.fileMenu.add_command(label = "끝내기", command = self.exit_file)
         self.text = tk.StringVar(self.window)
         self.text.set("file = None")
@@ -44,10 +46,17 @@ class windowform1():
         self.work.loadFile(list(self.filename)[0])
         self.combobox()
         self.text_input(self.window)
-        self.button_input(self.window)
+        self.button_input(self.window,"확인",self.confirm,230,230)
         self.label_input(self.window,"< DC value >",100,310)
         self.dc = tk.StringVar(self.window)
         self.dc.set("0")
+
+    def save_file(self,data):
+        csvfile = open(r"graph_data.csv","w", newline= "")
+        csvwrtier = csv.writer(csvfile)
+        for row in data:
+            csvwriter.writerow(row)
+        csvfile.close()
 
     def exit_file(self):
         self.window.quit()
@@ -70,10 +79,8 @@ class windowform1():
         self.num = int(self.combobox.get().split(' ')[0])
         self.work.slctData(self.num)
         self.work.initData()
-
         self.work.slctBySize()
         self.work.ifft()
-        self.work.saveFig()
         self.work.show()
         self.draw_figure(self.canvas, self.work.fig, self.window)
         self.dc.set(self.work.dcData)
@@ -81,7 +88,7 @@ class windowform1():
 
                     
     def draw_figure(self,canvas,fig,window):
-        self._clear(self.canvas)
+        self._clear(canvas)
         self.canvas = FigureCanvasTkAgg(fig, master = window)
         self.canvas.get_tk_widget().pack(expand = 1)
         
@@ -97,21 +104,19 @@ class windowform1():
         self.text_box = tk.Entry(window, width = 22)
         self.text_box.place(x=60,y=230)
 
-    def button_input(self,window):
-        self.button = tk.Button(window, text = "확인",command = self.confirm)
-        self.button.place(x=230,y=230)
+    def button_input(self,window,string,cmnd,Xloc,Yloc):
+        button = tk.Button(window, text = string,command = cmnd)
+        button.place(x=Xloc,y=Yloc)
 
     def confirm(self):
         start_end_list = list(map(int, self.text_box.get().split(',')))
         print(start_end_list)
-        self.work.run(self.num,start_end_list[0],start_end_list[1],\
-                      start_end_list[2],start_end_list[3])
-
-        self.window3 = tk.Tk()
-        self.window3.geometry("1500x800")
-        self.window3.title(str(self.num)+" graph")
-        self.draw_figure(self.canvas2, self.work.fig2, self.window3)
-       
+        self.work.bandPassFltr(start_end_list)
+        self.window2 = tk.Tk()
+        self.window2.geometry("800x800")
+        self.window2.title(str(self.num)+" graph")
+        self.draw_figure(self.canvas2,self.work.fig2,self.window2)
+        
     def main_loop(self):
         self.window.mainloop()
 

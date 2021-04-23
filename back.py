@@ -30,8 +30,8 @@ class backend:
 
 
     def __init__(self):
-        self.run()
-
+##        self.run()
+        pass        
     def run(self):
         self.loadFile('Normal_test.csv')
         self.slctData(1)
@@ -100,7 +100,7 @@ class backend:
         plt3 = self.fig2.add_subplot(3,1,3)
         plt3.plot( self.intrvList[:,1] )
 
-        plt.show()
+##        plt.show()
         
         
 
@@ -169,7 +169,7 @@ class backend:
         plt6.grid()
         
         self.fig.tight_layout()
-        plt.show()
+##        plt.show()
 
     
 
