@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 import math
 import warnings
+import pdb
 
 warnings.filterwarnings(action='ignore')
 
@@ -14,6 +15,8 @@ class backend:
     columnDataLength      = 0 # 파일의 열 길이
     orgnlData             = 0 # 데이터
     dcData                = 0 # 데이터 오프셋
+
+    
 
     dataLngth             = 0 # 데이터 길이
     fftData               = 0 # 원 데이터를 푸리에 변환
@@ -62,9 +65,9 @@ class backend:
         
         hlfLng = int( self.dataLngth / 2 )
         
-        self.fftData = np.fft.fft( self.orgnlData ) / self.dataLngth
+        self.fftData = np.fft.fft( self.orgnlData )
         self.amplt = 2 * abs( self.fftData[0:hlfLng] )
-        self.phase = np.angle( self.fftData[0:hlfLng], deg = False )
+        self.phase = np.angle( self.fftData[0:hlfLng], deg = False)
 
     # 진폭순으로 선택
     def slctBySize(self , _N = 2):
@@ -82,42 +85,39 @@ class backend:
         self.intrvList = []
         intrvLstln = len( _intrvList )
 
+        # start, end값
         for i in range(0, intrvLstln, 2):
             start = _intrvList[i]
             end = _intrvList[i+1]
             self.intrvList.append( self.orgnlData[start:end] )
-        self.intrvList = np.array( self.intrvList ).T
 
-##        plt.plot(self.intrvList)
-##        plt.show()
+        # 출력할 수 있게 끔 열 데이터로 변환    
+        for i in range(0, intrvLstln, 2):
+            index = int(i/2)
+            self.intrvList[index] = self.intrvList[index].reshape( len( self.intrvList[index]) ,1)
+
+        # 원데이터 출력
+        col = int(intrvLstln/2) + 1
         self.fig2 = plt.figure()
-        plt1 = self.fig2.add_subplot(3,1,1)
+        plt1 = self.fig2.add_subplot(col,1,1)
         plt1.plot( self.orgnlData )
 
-        plt2 = self.fig2.add_subplot(3,1,2)
-        plt2.plot( self.intrvList[:,0] )
-
-        plt3 = self.fig2.add_subplot(3,1,3)
-        plt3.plot( self.intrvList[:,1] )
-
-##        plt.show()
+        # 잘래낸 값 출력
+        temp = []
+        for i in range(0, intrvLstln, 2):
+            index = int(i/2)
+            temp.append( self.fig2.add_subplot( col, 1, index +2))
+            temp[index].plot( self.intrvList[index])
+        self.fig2.tight_layout()
+            
+        plt.show()
         
-        
-
     # 푸리에 역변환
     def ifft(self):
         self.result = np.fft.ifft( self.result ) * self.dataLngth
-
-##    # 그래프 저장
-##    def saveFig(self):
-##        self.fig = Figure( figsize=(10,7), dpi = 100 )
-##
-##        plt1 = self.fig.add_subplot(1, 1, 1)
-##        plt1.plot(self.orgnlData)
             
     # 출력
     def show(self):
-        time = np.linspace(0,5,2500)
         
         self.fig = plt.figure()
         plt1 = self.fig.add_subplot(3,2,1)
@@ -129,34 +129,36 @@ class backend:
         plt6 = self.fig.add_subplot(3,2,6)
 
         # 원 데이터 출력
+        time = np.arange(0,len(self.orgnlData)*5,5)
         plt1.plot(time, self.orgnlData)
         plt1.grid()
         plt1.set_xlabel("time")
         plt1.set_ylabel("y")
         
         # 진폭 스펙트럼 출력
-        plt3.stem(self.amplt)
+        Hz = np.arange(0, 0.2/2, 0.1/(len( self.orgnlData )*0.5) )
+        plt3.stem(Hz,self.amplt)
         plt3.grid()
         plt3.set_xlabel("Hz")
         plt3.set_ylabel("Amplitue")
         
         # 위상 스펙트럼 출력
         
-        plt5.stem(self.phase)
+        plt5.stem(Hz, self.phase)
         plt5.grid()
         plt5.set_xlabel("Hz")
         plt5.set_ylabel("Phase")
         
         # 진폭으로 크기 순으로 2개 뽑아서 ifft한 그래프
-        plt2.plot(self.result)
+        plt2.plot(time, self.result)
         plt2.set_ylabel("y")
         plt2.set_xlabel("ifft")
         plt2.grid()
 
         # A*sin(wt-q)로 진폭 크기순 2개 뽑아서 만든 그래프 : 주기가 있는 연속 신호일 경우
-        t = np.arange(0,2500,5)
-        plt4.plot(t, self.amplt[1]*sin(2*pi*1*0.4/1250*( t - self.phase[1] )) + \
-                 self.amplt[4]*sin(2*pi*4*0.4/1250*( t - self.phase[4] )) )
+        t = np.arange(0,2500*5,5)
+        plt4.plot(t, self.amplt[1]*sin(2*pi*1*0.1/1250*t +1*0.1*self.phase[1] ) + \
+                 self.amplt[4]*sin(2*pi*4*0.1/1250*t  + 4*0.1*self.phase[4] ))
         plt4.set_ylabel("y")
         plt4.set_xlabel("A*Sin( 2*pi*f(t - q))")
         plt4.grid()
@@ -169,12 +171,13 @@ class backend:
         plt6.grid()
         
         self.fig.tight_layout()
-##        plt.show()
+        plt.show()
 
     
 
 if __name__ == '__main__':
     test = backend()
+    test.run()
 
 
         
