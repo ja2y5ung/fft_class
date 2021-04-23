@@ -15,6 +15,7 @@ class windowform1():
     mainMenu = 0
     fileMenu = 0
     canvas = FigureCanvasTkAgg(plt.figure(), master = window)
+    canvas2 = FigureCanvasTkAgg(plt.figure(), master = window2)
     label1 = 0
     work = 0
     button = 0
@@ -33,7 +34,6 @@ class windowform1():
         self.fileMenu.add_command(label = "열기", command = self.open_file)
         self.fileMenu.add_command(label = "저장 하기", command = self.exit_file)
         self.fileMenu.add_command(label = "끝내기", command = self.exit_file)
-        
         self.text = tk.StringVar(self.window)
         self.text.set("file = None")
         self.text_label_input(self.window,self.text,10,0)
@@ -79,10 +79,8 @@ class windowform1():
         self.num = int(self.combobox.get().split(' ')[0])
         self.work.slctData(self.num)
         self.work.initData()
-
         self.work.slctBySize()
         self.work.ifft()
-        self.work.saveFig()
         self.work.show()
         self.draw_figure(self.canvas, self.work.fig, self.window)
         self.dc.set(self.work.dcData)
@@ -90,7 +88,7 @@ class windowform1():
 
                     
     def draw_figure(self,canvas,fig,window):
-        self._clear(self.canvas)
+        self._clear(canvas)
         self.canvas = FigureCanvasTkAgg(fig, master = window)
         self.canvas.get_tk_widget().pack(expand = 1)
         
@@ -113,9 +111,11 @@ class windowform1():
     def confirm(self):
         start_end_list = list(map(int, self.text_box.get().split(',')))
         print(start_end_list)
+        self.work.bandPassFltr(start_end_list)
         self.window2 = tk.Tk()
         self.window2.geometry("800x800")
         self.window2.title(str(self.num)+" graph")
+        self.draw_figure(self.canvas2,self.work.fig2,self.window2)
         
     def main_loop(self):
         self.window.mainloop()
