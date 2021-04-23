@@ -27,7 +27,8 @@ class backend:
 
 
     def __init__(self):
-        self.run()
+##        self.run()
+        pass
 
     def run(self):
         self.loadFile('Normal_test.csv')
@@ -157,7 +158,7 @@ class backend:
                  self.amplt[4]*sin(2*pi*4*0.4/1250*( t - self.phase[4] )), 'r' )
         #end
         
-        plt.show()
+##        plt.show()
 
 
 

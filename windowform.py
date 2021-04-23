@@ -18,8 +18,7 @@ class windowform1():
     label1 = 0
     work = 0
     button = 0
-    
-    
+
     def __init__(self):
         self.work = backend()
         
@@ -35,7 +34,7 @@ class windowform1():
         self.fileMenu.add_command(label = "끝내기", command = self.exit_file)
         self.text = tk.StringVar(self.window)
         self.text.set("file = None")
-        self.file_name_label()
+        self.text_label_input(self.window,self.text,10,0)
         
 
     def open_file(self):
@@ -46,14 +45,17 @@ class windowform1():
         self.combobox()
         self.text_input(self.window)
         self.button_input(self.window)
+        self.label_input(self.window,"< DC value >",100,310)
+        self.dc = tk.StringVar(self.window)
+        self.dc.set("0")
 
     def exit_file(self):
         self.window.quit()
         self.window.destroy()
         
-    def file_name_label(self):
-        self.label1 = tk.Label(self.window, textvariable = self.text)
-        self.label1.place(x=10,y=0)
+    def text_label_input(self,window,text,Xloc,Yloc):
+        label = tk.Label(window, textvariable = text)
+        label.place(x=Xloc,y=Yloc)
         
     def combobox(self):
         values=[str(i)+ ' <' + str(self.work.row_name[i]) + '>'\
@@ -61,8 +63,7 @@ class windowform1():
         self.combobox=tk.ttk.Combobox(self.window, height=15, values=values)
         self.combobox.set(0)
         self.combobox.place(x=60,y=120)
-        self.label2 = tk.Label(self.window, text = "< Data select > ")
-        self.label2.place(x = 100, y = 90)
+        self.label_input(self.window,"< Data select > ",100,90)
         self.combobox.bind("<<ComboboxSelected>>", self.callbackFunc)
 
     def callbackFunc(self,event):
@@ -72,10 +73,13 @@ class windowform1():
 
         self.work.slctBySize()
         self.work.ifft()
-        self.work.saveFig()       
+        self.work.saveFig()
+        self.work.show()
         self.draw_figure(self.canvas, self.work.fig, self.window)
+        self.dc.set(self.work.dcData)
+        self.text_label_input(self.window,str(self.dc),100,340)
 
-
+                    
     def draw_figure(self,canvas,fig,window):
         self._clear(self.canvas)
         self.canvas = FigureCanvasTkAgg(fig, master = window)
@@ -83,10 +87,13 @@ class windowform1():
         
     def _clear(self, canvas):
         canvas.get_tk_widget().forget()
-        
+
+    def label_input(self,window,string,Xloc,Yloc):
+        label = tk.Label(window, text = string)
+        label.place(x = Xloc,y = Yloc)
+                         
     def text_input(self,window):
-        self.label2 = tk.Label(self.window, text = "< Range select > ")
-        self.label2.place(x = 95, y = 200)
+        self.label_input(self.window,"< Range select > ",95,200)
         self.text_box = tk.Entry(window, width = 22)
         self.text_box.place(x=60,y=230)
 
