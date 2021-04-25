@@ -34,7 +34,8 @@ class backend:
 
     def __init__(self):
 ##        self.run()
-        pass        
+        pass
+    
     def run(self):
         self.loadFile('Normal_test.csv')
         self.slctData(1)
@@ -110,8 +111,8 @@ class backend:
             temp[index].plot( self.intrvList[index])
         self.fig2.tight_layout()
             
-        plt.show()
-        
+##        plt.show()
+##        
     # 푸리에 역변환
     def ifft(self):
         self.result = np.fft.ifft( self.result ) * self.dataLngth
@@ -171,7 +172,7 @@ class backend:
         plt6.grid()
         
         self.fig.tight_layout()
-        plt.show()
+##        plt.show()
 
     
 

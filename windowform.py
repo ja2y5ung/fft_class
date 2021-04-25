@@ -33,6 +33,12 @@ class windowform1():
         self.fileMenu.add_command(label = "열기", command = self.open_file)
         self.fileMenu.add_command(label = "저장 하기", command = self.exit_file)
         self.fileMenu.add_command(label = "끝내기", command = self.exit_file)
+
+        self.window.config(menu = self.mainMenu)
+        self.fileMenu2 = tk.Menu(self.mainMenu)
+        self.mainMenu.add_cascade(label = "기능", menu = self.fileMenu2)
+        self.fileMenu2.add_command(label = "범위 선택", command = self.range_select)
+        
         self.text = tk.StringVar(self.window)
         self.text.set("file = None")
         self.text_label_input(self.window,self.text,10,0)
@@ -44,7 +50,7 @@ class windowform1():
         self.text.set("file = " + str(self.filename))
         self.work.loadFile(list(self.filename)[0])
         self.combobox()
-        self.text_input(self.window)
+        self.text_input(self.window,"< Range select > ",60,230)
         self.button_input(self.window,"확인",self.confirm,230,230)
         self.label_input(self.window,"< DC value >",100,310)
         self.dc = tk.StringVar(self.window)
@@ -101,10 +107,10 @@ class windowform1():
         label = tk.Label(window, text = string)
         label.place(x = Xloc,y = Yloc)
                          
-    def text_input(self,window):
-        self.label_input(self.window,"< Range select > ",95,200)
+    def text_input(self,window,string,Xloc, Yloc):
+        self.label_input(window,string,Xloc+35,Yloc-30)
         self.text_box = tk.Entry(window, width = 22)
-        self.text_box.place(x=60,y=230)
+        self.text_box.place(x=Xloc,y=Yloc)
 
     def button_input(self,window,string,cmnd,Xloc,Yloc):
         button = tk.Button(window, text = string,command = cmnd)
@@ -118,7 +124,13 @@ class windowform1():
         self.window2.geometry("800x800")
         self.window2.title(str(self.num)+" graph")
         self.draw_figure(self.canvas2,self.work.fig2,self.window2,100,100)
-        
+
+    def range_select(self):
+        self.window3 = tk.Tk()
+        self.window3.geometry("300x400")
+        self.window3.title("Range Select controler")
+        self.text_input(self.window3,"number of range",70,60)
+
 window1 = windowform1()
 
 
