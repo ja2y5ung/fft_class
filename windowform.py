@@ -7,13 +7,12 @@ from back import backend
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 class windowform1():
     num = 0
     combobox = 0
     window,window2,window3 = 0 ,0 ,0
-    mainMenu = 0
-    fileMenu = 0
+    mainMenu,mainMenu2 = 0, 0
+    fileMenu,fileMenu2 = 0, 0
     canvas = FigureCanvasTkAgg(plt.figure(), master = window)
     canvas2 = FigureCanvasTkAgg(plt.figure(), master = window2)
     label1 = 0
@@ -37,8 +36,8 @@ class windowform1():
         self.text = tk.StringVar(self.window)
         self.text.set("file = None")
         self.text_label_input(self.window,self.text,10,0)
+        self.window.mainloop()
         
-
     def open_file(self):
         self.filename = filedialog.askopenfilenames(initialdir = "E:/Images", title = "파일선택",
                                                filetypes = (("csv files", "*.csv"), ("all files", "*.*")))
@@ -61,7 +60,11 @@ class windowform1():
     def exit_file(self):
         self.window.quit()
         self.window.destroy()
-        
+            
+    def exit_file2(self):
+        self.window2.quit()
+        self.window2.destroy()
+
     def text_label_input(self,window,text,Xloc,Yloc):
         label = tk.Label(window, textvariable = text)
         label.place(x=Xloc,y=Yloc)
@@ -82,15 +85,14 @@ class windowform1():
         self.work.slctBySize()
         self.work.ifft()
         self.work.show()
-        self.draw_figure(self.canvas, self.work.fig, self.window)
+        self.draw_figure(self.canvas, self.work.fig, self.window,500,200)
         self.dc.set(self.work.dcData)
         self.text_label_input(self.window,str(self.dc),100,340)
-
-                    
-    def draw_figure(self,canvas,fig,window):
+    
+    def draw_figure(self,canvas,fig,window,Xloc,Yloc):
         self._clear(canvas)
         self.canvas = FigureCanvasTkAgg(fig, master = window)
-        self.canvas.get_tk_widget().pack(expand = 1)
+        self.canvas.get_tk_widget().place(x = Xloc,y = Yloc)
         
     def _clear(self, canvas):
         canvas.get_tk_widget().forget()
@@ -115,14 +117,10 @@ class windowform1():
         self.window2 = tk.Tk()
         self.window2.geometry("800x800")
         self.window2.title(str(self.num)+" graph")
-        self.draw_figure(self.canvas2,self.work.fig2,self.window2)
+        self.draw_figure(self.canvas2,self.work.fig2,self.window2,100,100)
         
-    def main_loop(self):
-        self.window.mainloop()
-
-
 window1 = windowform1()
-window1.main_loop()
+
 
 
 
