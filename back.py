@@ -142,7 +142,6 @@ class backend:
             grphLst[index].set_xlabel("time")
             grphLst[index].set_title(chr(65+index))
             
-<<<<<<< HEAD
         self.intrvlData = intrvl
         self.intrvl = _value
         self.fig2.tight_layout()  
@@ -170,8 +169,6 @@ class backend:
             start = self.intrvl[i*2]
             end = self.intrvl[i*2+1]
             xAxis = np.linspace(start,end,end-start)
-=======
->>>>>>> ec5d11e966b2cbad12c94e13a65222f4440a2a51
             
             p = self.fig3.add_subplot(lngth,3,1+index*3)
             p.plot(xAxis, self.intrvlData[index])
@@ -188,13 +185,16 @@ class backend:
 
 
         ## 함수 합성하는 부분 def로 만들어야 함 04 25
-            self.fig4 = plt.figure()
+        self.fig4 = plt.figure()
+        sortIdx = amplt[0].argsort(axis=0)
+        pdb.set_trace()
+            
             
 
         
 
         self.fig3.tight_layout()
-##        self.fig3.show()
+        self.fig3.show()
             
 
 
@@ -239,13 +239,13 @@ class backend:
         
 
         self.fig.tight_layout()
-##        self.fig.show()
+        self.fig.show()
 
     
 
 if __name__ == '__main__':
     test = backend()
-##    test.run()
+    test.run()
 
 
         
