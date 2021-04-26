@@ -44,7 +44,7 @@ class backend:
         self.initData()
 
         self.getOrgn()
-        self.getIntrvl([0,800,1000,1500])
+        self.getIntrvl([0,100, 500,800])
         self.synthetic()
 
 
@@ -88,7 +88,7 @@ class backend:
 
         
     # 진폭순으로 선택
-    def slctBySize(self , _N = 2):
+    def slctBySize(self , _N = 1250):
         lngth = len( self.orgnlData ) // 2
 ##        0425 백업용.. 쓸지 모름
 ##        hlfLng = len( self.amplt )
@@ -135,7 +135,7 @@ class backend:
             index = i//2
             start = _value[i]
             end = _value[i+1]
-            xAxis = np.linspace(start, end, end-start)
+            xAxis = np.linspace(start*5, end*5, end - start)
             grphLst.append( self.fig2.add_subplot( col, 1, index +2))
             grphLst[index].plot(xAxis, intrvl[index] )
             grphLst[index].set_ylabel("x(t)")
@@ -152,8 +152,8 @@ class backend:
 
         
     # 선택된 구간 합성
-    def synthetic(self):
-        lngth = len( self.intrvlData )
+    def synthetic(self, _N = 50):
+        lngth = len( self.intrvlData ) # 잘라낸 데이터 개수
         fft = []
         amplt = []
         phase = []
@@ -163,12 +163,13 @@ class backend:
 
         for i in range(0,lngth):
             index = i
-            fft.append(np.fft.fft( self.intrvlData[index], axis = 0 ))
-            amplt.append( abs( fft[index][0: len(fft[index])//2] ))
+
+            fft.append(np.fft.fft( self.intrvlData[index] / len( self.intrvlData[index]), axis = 0 )) 
+            amplt.append( 2*abs( fft[index][0: len(fft[index])//2] ))
             phase.append( np.angle( fft[index][0: len(fft[index])//2 ], deg = False ))
             start = self.intrvl[i*2]
             end = self.intrvl[i*2+1]
-            xAxis = np.linspace(start,end,end-start)
+            xAxis = np.linspace(start,end,end - start)
             
             p = self.fig3.add_subplot(lngth,3,1+index*3)
             p.plot(xAxis, self.intrvlData[index])
@@ -184,17 +185,63 @@ class backend:
             p.set_ylabel("∠X(f)")
 
 
-        ## 함수 합성하는 부분 def로 만들어야 함 04 25
-        self.fig4 = plt.figure()
-        sortIdx = amplt[0].argsort(axis=0)
-        pdb.set_trace()
-            
-            
+        ## 함수 합성하는 부분 def로 만들어야 함 04 25 19:28
 
+        N = _N   # 크기순으로 뽑을 개수
+        self.fig4 = plt.figure()
+
+        Y = 0
+        t = np.linspace(0,12500,2500)
+        
+        for i in range(lngth):
+            sortIdx = amplt[i].argsort(axis=0)
+            amplt[i][ amplt[i] < amplt[i][ sortIdx[-N]]] = 0
+            for j in range(N):
+                Y = Y + amplt[i][ sortIdx[ -j ]]*sin( 2*pi*sortIdx[-j]*(0.1/1250)*t + (pi/2) + phase[i][ sortIdx[-j]] )
+
+
+##        tempsort = self.amplt.argsort(axis = 0)
+##        tempamplt = self.amplt[ self.amplt < self.amplt[ tempsort[-2] ] ] = 0
+##        YY = self.amplt[1]*sin( 2*pi*1*(0.1/1250)*t + (pi/2) + self.phase[1] ) + \
+##             self.amplt[4]*sin( 2*pi*4*(0.1/1250)*t + (pi/2) + self.phase[4] )
+##
+##
+##        tempdata = self.orgnlData
+##        tempfft = np.fft.fft(tempdata)
+##        sort = self.amplt.argsort()
+##        pdb.set_trace()
+##        self.amplt[ self.amplt  < self.amplt[ sort[-50] ]] = 0
+##
+##        tempdata[ self.amplt == 0 ] = 0
+##        tempifft = np.fft.ifft(tempdata)
+
+        
+                                
+        
+
+        
+            
+        plt1 = self.fig4.add_subplot(1,1,1)
+##        plt1.plot(t,self.orgnlData,'r')
+##        #plt1.plot(YY,'r')
+        plt1.plot(t,Y.T)
+        plt1.grid()
+        plt1.set_title("synthetic")
+
+        self.fig4.tight_layout()
+        self.fig4.show()
         
 
         self.fig3.tight_layout()
         self.fig3.show()
+
+        e = (self.orgnlData  - Y.T )**2
+        e = np.sqrt( e.mean() )
+        print(e)
+
+        
+
+        
             
 
 
