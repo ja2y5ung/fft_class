@@ -229,24 +229,19 @@ class backend:
         plt1.set_title("synthetic")
 
         self.fig4.tight_layout()
-        self.fig4.show()
+##        self.fig4.show()
         
 
         self.fig3.tight_layout()
-<<<<<<< HEAD
+
+##
 ##        self.fig3.show()
-=======
-        self.fig3.show()
 
         e = (self.orgnlData  - Y.T )**2
         e = np.sqrt( e.mean() )
         print(e)
 
-        
 
-        
->>>>>>> main
-            
 
 
 

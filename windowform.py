@@ -108,6 +108,10 @@ class windowform1():
         self.dc.set(self.work.dcData)
         self.text_label_input(self.frame1,str(self.dc),230,60)
         self.fileMenu2.entryconfig(1,state = "normal")
+        self.widget_clear(self.frame4)
+        self.widget_clear(self.frame5)
+        self.widget_clear(self.frame6)
+        self.fileMenu2.entryconfig(2,state = "disable")
     
     def draw_figure(self,canvas,fig,window,Xloc,Yloc):
         self.canvas = FigureCanvasTkAgg(fig, master = window)
@@ -146,11 +150,13 @@ class windowform1():
         
     def confirm2(self):
         a = int(self.text_box.get())
-
+        self.work.synthetic(a)
+        self.draw_figure(self.canvas, self.work.fig3, self.frame3,50,150)
         
         self.window2 = tk.Tk()
         self.window2.title('control')
-        self.window2.geometry("500x500+50+50")
+        self.window2.geometry("800x800+50+50")
+        self.draw_figure(self.canvas, self.work.fig4, self.window2,50,150)
         
     def range_select(self):
         self.widget_clear(self.frame4)
