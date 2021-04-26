@@ -33,15 +33,20 @@ class windowform1():
         self.fileMenu.add_command(label = "열기", command = self.open_file)
         self.fileMenu.add_command(label = "저장 하기", command = self.exit_file)
         self.fileMenu.add_command(label = "끝내기", command = self.exit_file)
-
         self.window.config(menu = self.mainMenu)
         self.fileMenu2 = tk.Menu(self.mainMenu)
         self.mainMenu.add_cascade(label = "기능", menu = self.fileMenu2)
         self.fileMenu2.add_command(label = "범위 선택", command = self.range_select)
+        self.fileMenu2.add_command(label = "ㅇ", command = self.range_select2)
         
-        self.text = tk.StringVar(self.window)
+        self.frame1=tkinter.Frame(self.window, width=300, height = 100, relief="solid", bd=1)
+        self.frame1.pack(fill="both")
+        self.frame2=tkinter.Frame(self.window)
+        self.frame3=tkinter.Frame(self.window, width=1400, height = 50,relief="solid", bd=1)
+        self.frame3.pack(side="right", fill="both", expand=True)
+        self.text = tk.StringVar(self.frame1)
         self.text.set("file = None")
-        self.text_label_input(self.window,self.text,10,0)
+        self.text_label_input(self.frame1,self.text,10,0)
         self.window.mainloop()
         
     def open_file(self):
@@ -49,11 +54,9 @@ class windowform1():
                                                filetypes = (("csv files", "*.csv"), ("all files", "*.*")))
         self.text.set("file = " + str(self.filename))
         self.work.loadFile(list(self.filename)[0])
-        self.combobox()
-        self.text_input(self.window,"< Range select > ",60,230)
-        self.button_input(self.window,"확인",self.confirm,230,230)
-        self.label_input(self.window,"< DC value >",100,310)
-        self.dc = tk.StringVar(self.window)
+        self.combobox(self.frame1)
+        self.label_input(self.frame1,"< DC value >",250,30)
+        self.dc = tk.StringVar(self.frame1)
         self.dc.set("0")
 
     def save_file(self,data):
@@ -75,13 +78,13 @@ class windowform1():
         label = tk.Label(window, textvariable = text)
         label.place(x=Xloc,y=Yloc)
         
-    def combobox(self):
+    def combobox(self,window):
         values=[str(i)+ ' <' + str(self.work.row_name[i]) + '>'\
                 for i in range(0, self.work.columnDataLength)] 
-        self.combobox=tk.ttk.Combobox(self.window, height=15, values=values)
+        self.combobox=tk.ttk.Combobox(window, height=15, values=values)
         self.combobox.set(0)
-        self.combobox.place(x=60,y=120)
-        self.label_input(self.window,"< Data select > ",100,90)
+        self.combobox.place(x=10,y=60)
+        self.label_input(self.frame1,"< Data select > ",50,30)
         self.combobox.bind("<<ComboboxSelected>>", self.callbackFunc)
 
     def callbackFunc(self,event):
@@ -91,18 +94,21 @@ class windowform1():
         self.work.slctBySize()
         self.work.ifft()
         self.work.show()
-        self.draw_figure(self.canvas, self.work.fig, self.window,500,200)
+        self.draw_figure(self.canvas, self.work.fig, self.frame3,500,200)
         self.dc.set(self.work.dcData)
-        self.text_label_input(self.window,str(self.dc),100,340)
+        self.text_label_input(self.frame1,str(self.dc),230,60)
     
     def draw_figure(self,canvas,fig,window,Xloc,Yloc):
-        self._clear(canvas)
+        self.canvas_clear(canvas)
         self.canvas = FigureCanvasTkAgg(fig, master = window)
         self.canvas.get_tk_widget().place(x = Xloc,y = Yloc)
         
-    def _clear(self, canvas):
+    def canvas_clear(self, canvas):
         canvas.get_tk_widget().forget()
 
+    def widget_clear(self, widget):
+        widget.pack_forget()
+        
     def label_input(self,window,string,Xloc,Yloc):
         label = tk.Label(window, text = string)
         label.place(x = Xloc,y = Yloc)
@@ -126,11 +132,22 @@ class windowform1():
         self.draw_figure(self.canvas2,self.work.fig2,self.window2,100,100)
 
     def range_select(self):
-        self.window3 = tk.Tk()
-        self.window3.geometry("300x400")
-        self.window3.title("Range Select controler")
-        self.text_input(self.window3,"number of range",70,60)
+        self.widget_clear(self.frame2)
+        self.frame2=tkinter.Frame(self.window, width=300, height = 700,relief="solid", bd=1)
+        self.frame2.pack(side="left", fill="both", expand=True)
+        self.button_input(self.frame2,"확인",self.confirm,250,50)
+        self.text_input(self.frame2,"< Range select > ",80,50)
+        
+    def range_select2(self):
+        self.widget_clear(self.frame2)
+        self.frame2=tkinter.Frame(self.window, width=300, height = 700,relief="solid", bd=1)
+        self.frame2.pack(side="left", fill="both", expand=True)
+        self.button_input(self.frame2,"확인",self.confirm,250,50)
+        self.text_input(self.frame2," < TEST> ",80,50)
 
+    
+    
+        
 window1 = windowform1()
 
 
