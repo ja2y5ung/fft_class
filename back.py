@@ -142,33 +142,6 @@ class backend:
             grphLst[index].set_xlabel("time")
             grphLst[index].set_title(chr(65+index))
             
-        self.intrvlData = intrvl
-        self.intrvl = _value
-        self.fig2.tight_layout()  
-        self.fig2.show()
-
-
-
-
-        
-    # 선택된 구간 합성
-    def synthetic(self):
-        lngth = len( self.intrvlData )
-        fft = []
-        amplt = []
-        phase = []
-        self.fig3 = plt.figure()
-        
-
-
-        for i in range(0,lngth):
-            index = i
-            fft.append(np.fft.fft( self.intrvlData[index], axis = 0 ))
-            amplt.append( abs( fft[index][0: len(fft[index])//2] ))
-            phase.append( np.angle( fft[index][0: len(fft[index])//2 ], deg = False ))
-            start = self.intrvl[i*2]
-            end = self.intrvl[i*2+1]
-            xAxis = np.linspace(start,end,end-start)
             
             p = self.fig3.add_subplot(lngth,3,1+index*3)
             p.plot(xAxis, self.intrvlData[index])
