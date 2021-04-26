@@ -91,9 +91,8 @@ class windowform1():
         self.num = int(self.combobox.get().split(' ')[0])
         self.work.slctData(self.num)
         self.work.initData()
-        self.work.slctBySize()
-        self.work.ifft()
-        self.work.show()
+
+        self.work.getOrgn()
         self.draw_figure(self.canvas, self.work.fig, self.frame3,500,200)
         self.dc.set(self.work.dcData)
         self.text_label_input(self.frame1,str(self.dc),230,60)
@@ -130,7 +129,7 @@ class windowform1():
             for i in a:
                 start_end_list.append(i)
         print(start_end_list)
-        self.work.bandPassFltr(start_end_list)
+        self.work.getIntrvl(start_end_list)
         self.window2 = tk.Tk()
         self.window2.geometry("800x800")
         self.window2.title(str(self.num)+" graph")
