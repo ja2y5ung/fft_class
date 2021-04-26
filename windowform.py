@@ -37,7 +37,7 @@ class windowform1():
         self.fileMenu2 = tk.Menu(self.mainMenu)
         self.mainMenu.add_cascade(label = "기능", menu = self.fileMenu2)
         self.fileMenu2.add_command(label = "범위 선택", command = self.range_select)
-        self.fileMenu2.add_command(label = "ㅇ", command = self.range_select2)
+        self.fileMenu2.add_command(label = "ㅇ", command = self.test)
         
         self.frame1=tkinter.Frame(self.window, width=300, height = 100, relief="solid", bd=1)
         self.frame1.pack(fill="both")
@@ -117,13 +117,18 @@ class windowform1():
         self.label_input(window,string,Xloc+35,Yloc-30)
         self.text_box = tk.Entry(window, width = 22)
         self.text_box.place(x=Xloc,y=Yloc)
+        return self.text_box
 
     def button_input(self,window,string,cmnd,Xloc,Yloc):
         button = tk.Button(window, text = string,command = cmnd)
         button.place(x=Xloc,y=Yloc)
 
     def confirm(self):
-        start_end_list = list(map(int, self.text_box.get().split(',')))
+        start_end_list = []
+        for textbox in self.list1:
+            a = list(map(int, textbox.get().split(',')))
+            for i in a:
+                start_end_list.append(i)
         print(start_end_list)
         self.work.bandPassFltr(start_end_list)
         self.window2 = tk.Tk()
@@ -135,15 +140,23 @@ class windowform1():
         self.widget_clear(self.frame2)
         self.frame2=tkinter.Frame(self.window, width=300, height = 700,relief="solid", bd=1)
         self.frame2.pack(side="left", fill="both", expand=True)
-        self.button_input(self.frame2,"확인",self.confirm,250,50)
-        self.text_input(self.frame2,"< Range select > ",80,50)
-        
-    def range_select2(self):
+        self.button_input(self.frame2,"확인",self.number_range,250,50)
+        self.button_input(self.frame2,"리셋",self.range_select,300,50)
+        self.text_input(self.frame2,"< number of range > ",80,50)
+
+    def number_range(self):
+        self.list1 = []
+        for i in range(int(self.text_box.get())):
+            self.a = self.text_input(self.frame2,"< " + str(i+1) + " range > ",80,150+(50*i))
+            self.list1.append(self.a)
+        self.button_input(self.frame2,"확인",self.confirm,250,150+(50*i))
+    
+    def test(self):
         self.widget_clear(self.frame2)
         self.frame2=tkinter.Frame(self.window, width=300, height = 700,relief="solid", bd=1)
         self.frame2.pack(side="left", fill="both", expand=True)
         self.button_input(self.frame2,"확인",self.confirm,250,50)
-        self.text_input(self.frame2," < TEST> ",80,50)
+        self.text_input(self.frame2," < Test Button > ",80,50)
 
     
     
