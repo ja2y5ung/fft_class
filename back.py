@@ -145,7 +145,7 @@ class backend:
         self.intrvlData = intrvl
         self.intrvl = _value
         self.fig2.tight_layout()  
-        self.fig2.show()
+##        self.fig2.show()
 
 
 
@@ -229,20 +229,19 @@ class backend:
         plt1.set_title("synthetic")
 
         self.fig4.tight_layout()
-        self.fig4.show()
+##        self.fig4.show()
         
 
         self.fig3.tight_layout()
-        self.fig3.show()
+
+##
+##        self.fig3.show()
 
         e = (self.orgnlData  - Y.T )**2
         e = np.sqrt( e.mean() )
         print(e)
 
-        
 
-        
-            
 
 
 
@@ -286,13 +285,13 @@ class backend:
         
 
         self.fig.tight_layout()
-        self.fig.show()
+##        self.fig.show()
 
     
 
 if __name__ == '__main__':
     test = backend()
-    test.run()
+##    test.run()
 
 
         

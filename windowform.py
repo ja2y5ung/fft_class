@@ -25,31 +25,40 @@ class windowform1():
         self.window = tk.Tk()
         self.window.title('control')
         self.window.geometry("1800x900+50+50")
-        self.window.resizable(False, False)
+##        self.window.resizable(False, False)
         self.mainMenu = tk.Menu(self.window)
+        
         self.window.config(menu = self.mainMenu)
         self.fileMenu = tk.Menu(self.mainMenu)
         self.mainMenu.add_cascade(label = "파일", menu = self.fileMenu)
         self.fileMenu.add_command(label = "열기", command = self.open_file)
         self.fileMenu.add_command(label = "저장 하기", command = self.exit_file)
         self.fileMenu.add_command(label = "끝내기", command = self.exit_file)
-        self.window.config(menu = self.mainMenu)
+        
         self.fileMenu2 = tk.Menu(self.mainMenu)
         self.mainMenu.add_cascade(label = "기능", menu = self.fileMenu2)
-        self.fileMenu2.add_command(label = "범위 선택", command = self.range_select)
-        self.fileMenu2.add_command(label = "ㅇ", command = self.test)
+        self.fileMenu2.add_command(label = "범위 선택", command = self.range_select,state = "disable")
+        self.fileMenu2.add_command(label = "선별", command = self.range_choice, state = "disable")
+        self.fileMenu2.add_command(label = "Test Button", command = self.test2, state = "disable")
         
         self.frame1=tkinter.Frame(self.window, width=300, height = 100, relief="solid", bd=1)
-        self.frame1.pack(fill="both")
-        self.frame2=tkinter.Frame(self.window)
+        self.frame1.pack(side="top",fill="both")
+        self.frame2=tkinter.Frame(self.window, width=300, height = 350,relief="solid", bd=1)
+        self.frame2.pack(side="left", anchor = "nw",fill='both', expand=True)
         self.frame3=tkinter.Frame(self.window, width=1400, height = 50,relief="solid", bd=1)
         self.frame3.pack(side="right", fill="both", expand=True)
+        self.frame4=tkinter.Frame(self.window)
+        self.frame5=tkinter.Frame(self.window)
+        self.frame6=tkinter.Frame(self.window)
+        
+        
         self.text = tk.StringVar(self.frame1)
         self.text.set("file = None")
         self.text_label_input(self.frame1,self.text,10,0)
         self.window.mainloop()
         
     def open_file(self):
+        
         self.filename = filedialog.askopenfilenames(initialdir = "E:/Images", title = "파일선택",
                                                filetypes = (("csv files", "*.csv"), ("all files", "*.*")))
         self.text.set("file = " + str(self.filename))
@@ -91,14 +100,20 @@ class windowform1():
         self.num = int(self.combobox.get().split(' ')[0])
         self.work.slctData(self.num)
         self.work.initData()
-
         self.work.getOrgn()
-        self.draw_figure(self.canvas, self.work.fig, self.frame3,500,200)
+        self.widget_clear(self.frame3)
+        self.frame3=tkinter.Frame(self.window, width=1400, height = 50,relief="solid", bd=1)
+        self.frame3.pack(side="right", fill="both", expand=True)
+        self.draw_figure(self.canvas, self.work.fig, self.frame3,50,150)
         self.dc.set(self.work.dcData)
         self.text_label_input(self.frame1,str(self.dc),230,60)
+        self.fileMenu2.entryconfig(1,state = "normal")
+        self.widget_clear(self.frame4)
+        self.widget_clear(self.frame5)
+        self.widget_clear(self.frame6)
+        self.fileMenu2.entryconfig(2,state = "disable")
     
     def draw_figure(self,canvas,fig,window,Xloc,Yloc):
-        self.canvas_clear(canvas)
         self.canvas = FigureCanvasTkAgg(fig, master = window)
         self.canvas.get_tk_widget().place(x = Xloc,y = Yloc)
         
@@ -122,7 +137,7 @@ class windowform1():
         button = tk.Button(window, text = string,command = cmnd)
         button.place(x=Xloc,y=Yloc)
 
-    def confirm(self):
+    def confirm1(self):
         start_end_list = []
         for textbox in self.list1:
             a = list(map(int, textbox.get().split(',')))
@@ -130,36 +145,54 @@ class windowform1():
                 start_end_list.append(i)
         print(start_end_list)
         self.work.getIntrvl(start_end_list)
+        self.draw_figure(self.frame3, self.work.fig2, self.frame3, 750,150)
+        self.fileMenu2.entryconfig(2,state = "normal")
+        
+    def confirm2(self):
+        a = int(self.text_box.get())
+        self.work.synthetic(a)
+        self.draw_figure(self.canvas, self.work.fig3, self.frame3,50,150)
+        
         self.window2 = tk.Tk()
-        self.window2.geometry("800x800")
-        self.window2.title(str(self.num)+" graph")
-        self.draw_figure(self.canvas2,self.work.fig2,self.window2,100,100)
-
+        self.window2.title('control')
+        self.window2.geometry("800x800+50+50")
+        self.draw_figure(self.canvas, self.work.fig4, self.window2,50,150)
+        
     def range_select(self):
-        self.widget_clear(self.frame2)
-        self.frame2=tkinter.Frame(self.window, width=300, height = 700,relief="solid", bd=1)
-        self.frame2.pack(side="left", fill="both", expand=True)
-        self.button_input(self.frame2,"확인",self.number_range,250,50)
-        self.button_input(self.frame2,"리셋",self.range_select,300,50)
-        self.text_input(self.frame2,"< number of range > ",80,50)
+        self.widget_clear(self.frame4)
+        self.widget_clear(self.frame5)
+        self.widget_clear(self.frame6)
+        self.fileMenu2.entryconfig(2,state = "disable")
+        self.frame4=tkinter.Frame(self.frame2, width=300, height = 350,relief="solid", bd=1)
+        self.frame4.pack(side="top",fill = 'both', expand=True)
+        self.button_input(self.frame4,"확인",self.number_range,250,50)
+        self.button_input(self.frame4,"리셋",self.range_select,40,50)
+        self.text_input(self.frame4,"< number of range > ",80,50)
 
     def number_range(self):
         self.list1 = []
         for i in range(int(self.text_box.get())):
-            self.a = self.text_input(self.frame2,"< " + str(i+1) + " range > ",80,150+(50*i))
+            self.a = self.text_input(self.frame4,"< " + str(i+1) + " range > ",80,150+(50*i))
             self.list1.append(self.a)
-        self.button_input(self.frame2,"확인",self.confirm,250,150+(50*i))
+        self.button_input(self.frame4,"확인",self.confirm1,250,150+(50*i))
     
-    def test(self):
-        self.widget_clear(self.frame2)
-        self.frame2=tkinter.Frame(self.window, width=300, height = 700,relief="solid", bd=1)
-        self.frame2.pack(side="left", fill="both", expand=True)
-        self.button_input(self.frame2,"확인",self.confirm,250,50)
-        self.text_input(self.frame2," < Test Button > ",80,50)
-
-    
-    
+    def range_choice(self):
+        self.widget_clear(self.frame5)
+        self.widget_clear(self.frame6)
+        self.frame5=tkinter.Frame(self.frame2, width=300, height = 80,relief="solid", bd=1)
+        self.frame5.pack(side="top",fill = 'both', expand=True)
+        self.button_input(self.frame5,"확인",self.confirm2,250,50)
+        self.text_input(self.frame5," < Number of selection > ",80,50)
         
+
+    def test2(self):
+        self.widget_clear(self.frame6)
+        self.frame6=tkinter.Frame(self.frame2, width=300, height = 80,relief="solid", bd=1)
+        self.frame6.pack(side="top",fill = 'both', expand=True)
+        self.button_input(self.frame6,"확인",self.confirm,250,50)
+        self.text_input(self.frame6," < Test Button > ",80,50)
+
+
 window1 = windowform1()
 
 
