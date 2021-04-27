@@ -1,4 +1,4 @@
-# 2021 04 26 그래프 복원 문제 해결, 구간 선택하는 부분 코딩
+# 2021 04 27 그래프의 축 값 계산, 그래프가 누적 오차가 생기는 듯한 현상 발견, 코드 길이 간결화
 import numpy as np
 from numpy import exp, pi, sin
 from matplotlib import pyplot as plt
@@ -11,23 +11,30 @@ warnings.filterwarnings(action='ignore')
 
 class backend:
 
-    file                  = 0 # 파일
-    columnDataLength      = 0 # 파일의 열 길이
+    file                  = 0 # 파일                              # [NxM]
+    columnDataLength      = 0 # 파일의 열 길이                    # N
     
-    orgnlData             = 0 # 데이터
-    dcData                = 0 # 데이터 오프셋
-    lngthData             = 0 # 데이터 길이
+    orgnlData             = 0 # 데이터                            # [Nx1]
+    dcData                = 0 # 데이터 오프셋                     # N
+    lngthData             = 0 # 데이터 길이                       # N
 
     f = 0.2
     T = 1/f
     
-    fftData               = 0 # 원 데이터를 푸리에 변환
-    amplt                 = 0 # 원 데이터의 진폭 스펙트럼
-    phase                 = 0 # 원 데이터의 위상 스펙트럼
+    fftData               = 0 # 원 데이터를 푸리에 변환           # [Nx1]
+    amplt                 = 0 # 원 데이터의 진폭 스펙트럼         # [Nx1]
+    phase                 = 0 # 원 데이터의 위상 스펙트럼         # [Nx1]
 
-    intrvlData             = [] #잘라낸 구간을 저장할 리스트
+    intrvlData            = [] #잘라낸 구간의 값들                # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
+    intrvl                = [] #잘려진 구간들의 위치              # list[ N, N, N, N ... ]
 
-    result                = 0 # 가공한 데이터 저장
+    slctFft               = [] #잘라낸 구간들의 fft               # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
+    slctAmplt             = [] #잘라낸 구간들의 amplt             # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
+    slctPhase             = [] #잘라낸 구간들의 phase             # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
+
+
+    error                 = 0  # 에러 
+
     fig                   = 0 # 그래프 저장할 객체
     fig2                  = 0 # 잘라낸 그래프 저장할 객체
     fig3                  = 0 # 잘라낸 그래프 합성하기
@@ -44,8 +51,9 @@ class backend:
         self.initData()
 
         self.getOrgn()
-        self.getIntrvl([0,100, 500,800])
+        self.getIntrvl([0,12500])
         self.synthetic()
+        self.slctBySize()
 
 
 
@@ -65,7 +73,7 @@ class backend:
         
     # 파일 안에서 데이터 선택하기
     def slctData(self, _num):
-        self.orgnlData = self.file[1:, _num]
+        self.orgnlData = self.file[1:, _num]                                                                            # N
 
 
 
@@ -75,177 +83,159 @@ class backend:
     def initData(self):
         self.lngthData = len( self.orgnlData )
         self.dcData = self.orgnlData.mean()
-        self.orgnlData = np.array([self.orgnlData - self.dcData]).T
+        self.orgnlData = np.array([self.orgnlData - self.dcData]).T                                                     # [1xN]
 
         hlfLngth = self.lngthData // 2
         
-        self.fftData = np.fft.fft( self.orgnlData, axis = 0) / self.lngthData
+        self.fftData = np.fft.fft( self.orgnlData, axis = 0) / self.lngthData                                           # [Nx1]
         self.amplt = 2 * abs( self.fftData[0:hlfLngth] )
         self.phase = np.angle( self.fftData[0:hlfLngth], deg = False)
 
 
 
 
+
+
+
         
-    # 진폭순으로 선택
-    def slctBySize(self , _N = 1250):
-        lngth = len( self.orgnlData ) // 2
-##        0425 백업용.. 쓸지 모름
-##        hlfLng = len( self.amplt )
-##        self.result = self.fftData
-##        idxSortAmp = self.amplt.argsort()
-##        self.a = idxSortAmp
-##        N = idxSortAmp[-_N]
-##        
-##        self.result[ abs(self.fftData) < abs(self.fftData[N]) ] = 0
-
-
-
 
 
     # 구간 잘라내기
-    def getIntrvl(self, _value):
-        intrvl = []
-        lngth = len(_value)
+    def getIntrvl(self, _intrvl):
+        intrvlData = []
+        cntSlct = len(_intrvl) // 2 # 잘라낸 구간 개수
 
-        # start, end값
-        for i in range(0, lngth, 2):
-            start = _value[i]
-            end = _value[i+1]
-            intrvl.append( self.orgnlData[start:end] )
-            index = i // 2
-
-            
-
-        Hz = np.linspace(0, self.f/2, self.lngthData//2)
-        time = np.linspace(0, self.lngthData * self.T, self.lngthData)      
-        # 원데이터 출력
-        col = (lngth//2) + 1
         self.fig2 = plt.figure()
-        plt1 = self.fig2.add_subplot(col,1,1)
-        plt1.plot(time, self.orgnlData )
-        plt1.grid()
-        plt1.set_xlabel("time")
-        plt1.set_ylabel("x(t))")
-        plt1.set_title("Orignal")
-
-        # 잘래낸 값 출력
+        
         grphLst = []
-        for i in range(0, lngth, 2):
-            index = i//2
-            start = _value[i]
-            end = _value[i+1]
-            xAxis = np.linspace(start*5, end*5, end - start)
-            grphLst.append( self.fig2.add_subplot( col, 1, index +2))
-            grphLst[index].plot(xAxis, intrvl[index] )
-            grphLst[index].set_ylabel("x(t)")
-            grphLst[index].set_xlabel("time")
-            grphLst[index].set_title(chr(65+index))
+        # start, end값 잘라 내고 출력하기
+        for i in range(0, cntSlct):
+            start = _intrvl[i*2]// int( self.T ) 
+            end = _intrvl[i*2+1]// int( self.T ) 
+            step = int( end - start )
+            cutTime = np.linspace(start*5, end*5, step, endpoint = False  )                                             # N
             
-        self.intrvlData = intrvl
-        self.intrvl = _value
+            intrvlData.append( self.orgnlData[start:end] )                                                              # list[ np[end-startx1], np[end-startx1], np[end-startx1], ... ]
+    
+            grphLst.append( self.fig2.add_subplot( cntSlct, 1, i +1))
+            grphLst[i].plot(cutTime, intrvlData[i] )
+            grphLst[i].grid()
+            grphLst[i].set_ylabel("x(t)")
+            grphLst[i].set_xlabel("time")
+            grphLst[i].set_title(chr(65+i))
+            
+
+          
+        self.intrvlData = intrvlData                                                                                    # list[ np[end-startx1], np[end-startx1], np[end-startx1], ... ]  
+        self.intrvl = _intrvl                                                                                           # list[ N, N, N ... ]
+        
         self.fig2.tight_layout()  
-##        self.fig2.show()
-
-
-
+        self.fig2.show()
 
         
-    # 선택된 구간 합성
-    def synthetic(self, _N = 50):
-        lngth = len( self.intrvlData ) # 잘라낸 데이터 개수
-        fft = []
-        amplt = []
-        phase = []
+
+##    # 진폭순으로 선택
+##    def slctBySize(self , _N = 1250):
+##        lngth = len( self.orgnlData ) // 2
+####        0425 백업용.. 쓸지 모름
+####        hlfLng = len( self.amplt )
+####        self.result = self.fftData
+####        idxSortAmp = self.amplt.argsort()
+####        self.a = idxSortAmp
+####        N = idxSortAmp[-_N]
+####        
+####        self.result[ abs(self.fftData) < abs(self.fftData[N]) ] = 0
+
+        
+    # 선택된 구간의 fft들
+    # getSlctFft같은걸로 이름 바꺼야 할듯
+    def synthetic(self):
+        cntData = len( self.intrvlData )                                                                                # N
+        
         self.fig3 = plt.figure()
         
-
-
-        for i in range(0,lngth):
-            index = i
-
-            fft.append(np.fft.fft( self.intrvlData[index] / len( self.intrvlData[index]), axis = 0 )) 
-            amplt.append( 2*abs( fft[index][0: len(fft[index])//2] ))
-            phase.append( np.angle( fft[index][0: len(fft[index])//2 ], deg = False ))
-            start = self.intrvl[i*2]
-            end = self.intrvl[i*2+1]
-            xAxis = np.linspace(start,end,end - start)
+        for i in range(0, cntData): # 잘라낸 구간 만큼 fft 계산
             
-            p = self.fig3.add_subplot(lngth,3,1+index*3)
-            p.plot(xAxis, self.intrvlData[index])
+            lngth = len( self.intrvlData[i] )                                                                           # N
+            hlfLngth = lngth // 2                                                                                       # N
+            fft = np.fft.fft( self.intrvlData[i] , axis = 0 ) / lngth                                                   # [Nx1]
+            amplt = 2*abs( fft[0: hlfLngth] )                                                                           # [Nx1]
+            phase = np.angle( fft[0: hlfLngth ], deg = False )
+            
+            self.slctFft.append(fft)                                                                                    # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
+            self.slctAmplt.append( amplt )                                                                              # list[ np[Nx1], np[Nx1] ... ]
+            self.slctPhase.append( phase )                                                                              # list[ np[Nx1], np[Nx1] ... ]
+            
+            
+            start = self.intrvl[i*2] // 5                                                                               # N
+            end = self.intrvl[i*2+1] // 5                                                                               # N
+            
+            cutTime = np.linspace(start*5, end*5, int(end - start), endpoint = False)                                   # N
+            step = 0.1/((end - start)/2)                                                                                # N
+            Hz = np.arange(0,0.1, step )                                                                                # N
+            
+
+            p = self.fig3.add_subplot(3,cntData,1+i)
+            p.plot(cutTime, self.intrvlData[i])
             p.set_xlabel("time")
             p.set_ylabel("x(t)")
-            p = self.fig3.add_subplot(lngth,3,2+index*3)
-            p.stem(amplt[index])
+            p.set_title(chr(65+i))
+            p = self.fig3.add_subplot(3,cntData,2+(cntData-1)*math.ceil(2/cntData)+i)
+            p.stem(Hz,self.slctAmplt[i])
             p.set_xlabel("Hz")
             p.set_ylabel("∣X(f)∣")
-            p = self.fig3.add_subplot(lngth,3,3+index*3)
-            p.stem(phase[index])
+            p = self.fig3.add_subplot(3,cntData,3+(cntData-1)*math.ceil(3/cntData)+i)
+            p.stem(Hz,self.slctPhase[i])
             p.set_xlabel("Hz")
             p.set_ylabel("∠X(f)")
 
 
-        ## 함수 합성하는 부분 def로 만들어야 함 04 25 19:28
+        self.fig3.tight_layout()
 
+        
+
+    def slctBySize(self, _N = 30):
         N = _N   # 크기순으로 뽑을 개수
+        cntData = len( self.intrvlData ) # N
+        
         self.fig4 = plt.figure()
 
         Y = 0
-        t = np.linspace(0,12500,2500)
-        
-        for i in range(lngth):
-            sortIdx = amplt[i].argsort(axis=0)
-            amplt[i][ amplt[i] < amplt[i][ sortIdx[-N]]] = 0
-            for j in range(N):
-                Y = Y + amplt[i][ sortIdx[ -j ]]*sin( 2*pi*sortIdx[-j]*(0.1/1250)*t + (pi/2) + phase[i][ sortIdx[-j]] )
-
-
-##        tempsort = self.amplt.argsort(axis = 0)
-##        tempamplt = self.amplt[ self.amplt < self.amplt[ tempsort[-2] ] ] = 0
-##        YY = self.amplt[1]*sin( 2*pi*1*(0.1/1250)*t + (pi/2) + self.phase[1] ) + \
-##             self.amplt[4]*sin( 2*pi*4*(0.1/1250)*t + (pi/2) + self.phase[4] )
-##
-##
-##        tempdata = self.orgnlData
-##        tempfft = np.fft.fft(tempdata)
-##        sort = self.amplt.argsort()
-##        pdb.set_trace()
-##        self.amplt[ self.amplt  < self.amplt[ sort[-50] ]] = 0
-##
-##        tempdata[ self.amplt == 0 ] = 0
-##        tempifft = np.fft.ifft(tempdata)
-
-        
-                                
-        
-
-        
+        t = np.linspace(0,12500,2500, endpoint = False) # N
+        t = np.arange(0,12500,5)
+        for cnt in range(cntData):  # 선택된 구간만큼 반복
             
+            amplt = self.slctAmplt[cnt]     # [Nx1]
+            phase = self.slctPhase[cnt]     # [Nx1]
+            sortIdx = amplt.argsort(axis=0) # [Nx1]
+            size = sortIdx[-N]              # N
+            f =  (1 / ( self.intrvl[cnt*2+1] - self.intrvl[cnt*2] )) # N
+            
+            
+            amplt[ amplt < amplt[ size ] ] = 0 # [Nx1]
+            
+            for i in range(N):
+                k = sortIdx[ -(i+1) ]
+                A = amplt[k]
+                q = phase[k] + (pi/2)
+                
+                Y = Y + A*sin( 2*pi*k*f*t  + q )
+
         plt1 = self.fig4.add_subplot(1,1,1)
-##        plt1.plot(t,self.orgnlData,'r')
-##        #plt1.plot(YY,'r')
-        plt1.plot(t,Y.T)
+        plt1.plot(t,self.orgnlData)
+        plt1.plot(t,Y.T,'r')
         plt1.grid()
-        plt1.set_title("synthetic")
-
-        self.fig4.tight_layout()
-##        self.fig4.show()
+        plt1.set_xlabel("time")
+        plt1.set_ylabel("x(t)")
+        plt1.set_title("Result")
+        plt.legend(['Orignal', 'Synthesis'])
         
-
-        self.fig3.tight_layout()
-
-##
-##        self.fig3.show()
-
-        e = (self.orgnlData  - Y.T )**2
-        e = np.sqrt( e.mean() )
-        print(e)
-
-
-
-
-
-
+        self.fig4.show()
+        
+        self.e = (self.orgnlData  - Y.T )**2
+        self.e = np.sqrt( self.e.mean() )
+        
+        print(self.e)
 
 
                                       
@@ -256,8 +246,8 @@ class backend:
         plt2 = self.fig.add_subplot(3,1,2)
         plt3 = self.fig.add_subplot(3,1,3)
 
-        Hz = np.linspace(0, self.f/2, self.lngthData//2)
-        time = np.linspace(0, self.lngthData * self.T, self.lngthData)
+        Hz = np.linspace(0, self.f/2, self.lngthData//2, endpoint = False)
+        time = np.linspace(0, self.lngthData * self.T, self.lngthData, endpoint = False)
 
 
         # 원 데이터 출력
@@ -285,13 +275,13 @@ class backend:
         
 
         self.fig.tight_layout()
-##        self.fig.show()
+        self.fig.show()
 
     
 
 if __name__ == '__main__':
     test = backend()
-##    test.run()
+    test.run()
 
 
         
