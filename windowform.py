@@ -145,12 +145,14 @@ class windowform1():
                 start_end_list.append(i)
         print(start_end_list)
         self.work.getIntrvl(start_end_list)
-        self.draw_figure(self.frame3, self.work.fig2, self.frame3, 750,150)
+        self.work.synthetic()
+        self.draw_figure(self.frame3, self.work.fig2, self.frame3, 50,150)
+        self.draw_figure(self.frame3, self.work.fig3, self.frame3, 750,150)
         self.fileMenu2.entryconfig(2,state = "normal")
         
     def confirm2(self):
         a = int(self.text_box.get())
-        self.work.synthetic(a)
+        self.work.slctBySize(a)
         self.draw_figure(self.canvas, self.work.fig3, self.frame3,50,150)
         
         self.window2 = tk.Tk()
