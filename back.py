@@ -130,7 +130,7 @@ class backend:
         self.intrvl = _intrvl                                                                                           # list[ N, N, N ... ]
         
         self.fig2.tight_layout()  
-        self.fig2.show()
+##        self.fig2.show()
 
         
 
@@ -230,7 +230,7 @@ class backend:
         plt1.set_title("Result")
         plt.legend(['Orignal', 'Synthesis'])
         
-        self.fig4.show()
+##        self.fig4.show()
         
         self.e = (self.orgnlData  - Y.T )**2
         self.e = np.sqrt( self.e.mean() )
@@ -275,7 +275,7 @@ class backend:
         
 
         self.fig.tight_layout()
-        self.fig.show()
+##        self.fig.show()
 
     
 
