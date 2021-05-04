@@ -235,7 +235,7 @@ class backend:
         self.e = (self.orgnlData  - Y.T )**2
         self.e = np.sqrt( self.e.mean() )
         
-        print(self.e)
+        print("Error = ",self.e)
 
 
                                       
