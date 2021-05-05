@@ -100,7 +100,7 @@ class backend:
     
 
     # 구간 잘라내기 ##########################################################################
-    def getIntrvl(self, _intrvl = [0, 2500], _mult = [1, 1], _show = False ):
+    def getIntrvl(self, _intrvl = [0, 2500], _mult = [1, 1], _show = True ):
         self.fig2 = plt.figure()
         
         intrvlData  = []                    # 잘라낸 구간들
@@ -143,7 +143,7 @@ class backend:
 
 
     # 구간 합성하기 ############################################################################
-    def genSgnl(self, _cntSmpl = 2500, _show = False):
+    def genSgnl(self, _cntSmpl = 2500, _show = True):
         self.fig3   = plt.figure()
         cnt         = len( self.intrvlData )
 
