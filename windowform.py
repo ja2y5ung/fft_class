@@ -219,7 +219,8 @@ class windowform1():
                 self.list2[j].pack(side="top",fill = 'x')
                 self.list1.append(rng_box)
                 
-            self.label_input(self.frame6,self.label7,"● 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")           
+            self.label_input(self.frame6,self.label7,"● 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
+            self.label_input(self.frame6,self.label7,"● 0~12500 사이로 입력해주세요.","top")
             self.widget_clear(self.buttonframe)
             self.buttonframe2=tkinter.Frame(self.frame6, width=300, height = 350)
             self.buttonframe2.pack(side="bottom")  
