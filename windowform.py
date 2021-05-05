@@ -112,13 +112,15 @@ class windowform1():
     def save_file(self):
         self.Y = self.work.saveSgnl()
 
-        self.YFrame = pd.DataFrame(self.Y)
-        self.YFrame.to_csv(r"graph_data.csv",header=False,index=False)
-##        csvfile = open(r"graph_data.csv","w", newline= "")
-##        csvwrtier = csv.writer(csvfile)
-##        for row in self.Y:
-##            csvwriter.writerow(row)
-##        csvfile.close()
+        self.YFrame = pd.DataFrame(self.Y, columns = ['genSgnl'])
+        self.filename2 = filedialog.asksaveasfilename(initialdir = "E:/Images", title = "경로 선택",
+                                               filetypes = (("csv files", "*.csv"), ("all files", "*.*")))
+        self.YFrame.to_csv(str(self.filename2),index=False)
+
+##        self.savewin = tk.Tk()
+##        self.savewin.title('save')
+##        self.savewin.geometry("250x100+350+350")
+##        self.label_input(self.savewin,self.label6,"데이터를 저장 했습니다.","top")
 
     def exit_file(self):
         self.window.quit()
@@ -172,7 +174,7 @@ class windowform1():
         
     def label_input(self,window,label,string,loc):
         label = tk.Label(window, text = string)
-        label.pack(side = loc)
+        label.pack(side = loc,expand=True)
         
     def text_input(self, window,label, string,wid,loc1,loc2):
         self.label_input(window, label, string,loc2)
@@ -224,7 +226,7 @@ class windowform1():
                 self.list1.append(rng_box)
                 
             self.label_input(self.frame6,self.label7,"● 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
-            self.label_input(self.frame6,self.label7,"● 0~12500 사이로 입력해주세요.","top")
+            self.label_input(self.frame6,self.label7,"● 0~" + str(self.work.lngthData) +" 사이로 입력해주세요.","top")
             self.widget_clear(self.buttonframe)
             self.buttonframe2=tkinter.Frame(self.frame6, width=300, height = 350)
             self.buttonframe2.pack(side="bottom")  
