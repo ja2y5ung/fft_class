@@ -44,7 +44,7 @@ class windowform1():
         
         self.fileMenu2 = tk.Menu(self.mainMenu, tearoff=0)
         self.mainMenu.add_cascade(label = "기능", menu = self.fileMenu2)
-        self.fileMenu2.add_command(label = "범위 선택", command = self.range_select,state = "disable")
+        self.fileMenu2.add_command(label = "예측 신호 생성", command = self.range_select,state = "disable")
 ##        self.fileMenu2.add_command(label = "Test Button", command = self.test2, state = "disable")
 
         #파일
@@ -161,7 +161,7 @@ class windowform1():
         self.canvasframe.pack(expand=True)
         self.draw_figure(self.canvas, self.work.fig1, self.canvasframe)
         self.dc.set(self.work.dcData)
-        self.sr.set(self.work.f)
+        self.sr.set(self.work.Fs)
         self.fileMenu2.entryconfig(0,state = "normal")
         self.widget_clear(self.frame4)
         self.widget_clear(self.frame5)
@@ -270,6 +270,16 @@ class windowform1():
 
 
     def hz_range_num(self):
+        self.widget_clear(self.empty_frame2)
+        start_end_list,exp_list = [], []
+        for textbox in self.list1:
+            a = list(map(int, textbox.get().split(',')))
+            for i in a:
+                start_end_list.append(i)
+
+        self.work.getIntrvl(start_end_list)
+        
+        self.fileMenu2.entryconfig(2,state = "normal")
         self.widget_clear(self.hzSlctframe)
         self.widget_clear(self.hzrangeSlctframe)
         self.widget_clear(self.buttonframe2)
@@ -290,6 +300,9 @@ class windowform1():
         self.widget_clear(self.hzSlctframe)
         self.widget_clear(self.empty_frame2)
         self.widget_clear(self.hzrbuttonframe)
+        self.widget_clear(self.empty_frame3)
+        self.widget_clear(self.sampleframe)
+        
         self.hzlist1,self.hzlist2,self.hzlist3 = [], [], []
         self.empty_frame2 = tkinter.Frame(self.frame4, width=300, height = 20)
         self.empty_frame2.pack(side="top",fill = 'x')
@@ -309,7 +322,7 @@ class windowform1():
             self.hzlist1.append(rng_box2)
             
         self.label_input(self.hzSlctframe,self.label7,"● 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
-        self.label_input(self.hzSlctframe,self.label7,"● 0~" + str(self.work.lngthData) +" 사이로 입력해주세요.","top")
+        self.label_input(self.hzSlctframe,self.label7,"● 0~" + str(self.work.lngthData//2) +" 사이로 입력해주세요.","top")
         
         self.buttonframe3=tkinter.Frame(self.hzSlctframe, width=300, height = 350)
         self.buttonframe3.pack(side="bottom")  
@@ -319,31 +332,34 @@ class windowform1():
         self.hzrbuttonframe.pack(side="bottom")              
         self.button_input(self.hzrbuttonframe,"갯수 리셋",self.hz_range_num,10,"left")
         
-    def confirm2(self): 
-        start_end_list,exp_list = [], []
-        for textbox in self.list1:
+    def confirm2(self):
+        self.widget_clear(self.buttonframe3)
+        start_end_list2, exp_list2 = [], []
+        for textbox in self.hzlist1:
             a = list(map(int, textbox.get().split(',')))
             for i in a:
-                start_end_list.append(i)
-        for textbox2 in self.list3:
-            exp_list.append(float(textbox2.get()))
+                start_end_list2.append(i)
+        for textbox2 in self.hzlist3:
+            exp_list2.append(float(textbox2.get()))
+
+        self.work.fftIntrvl()
+        self.work.slctFft(start_end_list2,exp_list2)
         
-        self.work.getIntrvl(start_end_list)
         self.fileMenu2.entryconfig(2,state = "normal")
         self.empty_frame3 = tkinter.Frame(self.frame4, width=300, height = 20)
         self.empty_frame3.pack(side="top",fill = 'x')        
         self.sampleframe = tkinter.Frame(self.frame4, width=300, height = 150, relief="solid", bd=1)
         self.sampleframe.pack(side = "top",fill = 'x')
-        self.sample_box = self.text_input(self.sampleframe, self.sample_label, " < 샘플 갯수 입력 > ",10,"top","top")
+        self.sample_box2 = self.text_input(self.sampleframe, self.sample_label, " < 샘플 갯수 입력 > ",10,"top","top")
         self.button_input(self.sampleframe,"입   력",self.sample_choice,10,"bottom")        
         self.widget_clear(self.buttonframe2)
-        self.buttonframe3=tkinter.Frame(self.frame6, width=300, height = 350)
+        self.buttonframe3=tkinter.Frame(self.hzSlctframe, width=300, height = 350)
         self.buttonframe3.pack(side="bottom")        
-        self.button_input(self.buttonframe3,"범위 리셋",self.number_range,10,"left")
+        self.button_input(self.buttonframe3,"범위 리셋",self.hz_range,10,"left")
 
     
     def sample_choice(self):
-        self.work.genSgnl(int(self.sample_box.get()))
+        self.work.genSgnl(int(self.sample_box2.get()))
         self.er.set(self.work.error)
         self.fileMenu.entryconfig(1,state = "normal")
         

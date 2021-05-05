@@ -103,7 +103,7 @@ class backend:
         self.phase          = np.angle( self.fftData[0:self.lngthData//2], deg = False)
 
         self.Fs             = 0.2
-        self.T              = 1 / self.f
+        self.T              = 1 / self.Fs
         self.frqRez         = 1 / self.lngthData
 
     
