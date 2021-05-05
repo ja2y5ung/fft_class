@@ -15,22 +15,27 @@ warnings.filterwarnings(action='ignore')
 
 class backend:
 
-    file                  = 0   # 파일
-    columnDataLength      = 0   # 파일의 열 길이
+    file                  = 0   # 파일                              # [NxM]
+    columnDataLength      = 0   # 파일의 열 길이                    # N
     
-    orgnlData             = 0   # 데이터
-    dcData                = 0   # 데이터 오프셋
-    lngthData             = 0   # 데이터 길이
+    orgnlData             = 0   # 데이터                            # [Nx1]
+    dcData                = 0   # 데이터 오프셋                     # N
+    lngthData             = 0   # 데이터 길이                       # N
 
     f                     = 0.2 # 샘플링 주파수
     T                     = 1/f # 주기             
     
-    fftData               = 0   # 원 데이터를 푸리에 변환
-    amplt                 = 0   # 원 데이터의 진폭 스펙트럼
-    phase                 = 0   # 원 데이터의 위상 스펙트럼
+    fftData               = 0   # 원 데이터를 푸리에 변환           # [Nx1]
+    amplt                 = 0   # 원 데이터의 진폭 스펙트럼         # [Nx1]
+    phase                 = 0   # 원 데이터의 위상 스펙트럼         # [Nx1]
 
-    intrvlData            = []  #잘라낸 구간의 값들
-    intrvl                = []  #잘려진 구간들의 위치
+    intrvlData            = []  #잘라낸 구간의 값들                # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
+    intrvl                = []  #잘려진 구간들의 위치              # list[ N, N, N, N ... ]
+
+    slctFft               = []  #잘라낸 구간들의 fft               # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
+    slctAmplt             = []  #잘라낸 구간들의 amplt             # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
+    slctPhase             = []  #잘라낸 구간들의 phase             # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
+
 
     error                 = 0   # 에러율
 
@@ -47,7 +52,7 @@ class backend:
     
     def run(self):
         self.loadFile('Normal_test.csv')
-        self.slctData()
+        self.slctData(1)
         self.initData()
 
         self.getOrgn()
@@ -65,10 +70,7 @@ class backend:
     # 파일 불러오기 ############################################################################
     def loadFile(self, _path):
         self.file = np.genfromtxt( _path, delimiter = ',', dtype = float, encoding = 'UTF-8')
-        if( len( self.file.shape) == 1 ):
-            self.columnDataLength = 1           
-        else:
-            self.columnDataLength = self.file.shape[1]
+        self.columnDataLength = self.file.shape[1]
         self.row_name = np.genfromtxt( _path, delimiter = ',', dtype = str)[0]
     # 파일 불러오기 end #########################################################################
 
@@ -77,10 +79,7 @@ class backend:
 
     # 파일 안에서 데이터 선택하기 ##############################################################
     def slctData(self, _num = 0):
-        if ( self.columnDataLength == 1 ):
-            self.orgnlData = self.file[1:]
-        else:
-            self.orgnlData = self.file[1:, _num] 
+        self.orgnlData = self.file[1:, _num] 
     # 파일 안에서 데이터 선택하기 end ###########################################################
 
 
@@ -201,7 +200,7 @@ class backend:
 
     # 데이터 저장하기 #############################################################################
     def saveSgnl(self):
-        return np.array( [self.Y] ).T
+        return np.array([self.Y]).T
     # 데이터 저장하기 end #######################################################################
 
 
@@ -258,6 +257,9 @@ if __name__ == '__main__':
     test.run()
 
 
+
+
+# ?
 
 
 ### 선택된 구간의 fft들 ########################################################################
