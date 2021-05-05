@@ -1,7 +1,7 @@
 # 2021 04 27 그래프의 축 값 계산, 그래프가 누적 오차가 생기는 듯한 현상 발견, 코드 길이 간결화
 # 2021 05 03 교수님 요구 사항 수정 : GUI  개선, 잘라낸 구간 증폭, 신호 생성 구간 설정, 데이터 저장, 에러처리
 # 2021 05 04 시발 왜 저장이 안됫지 시발 시발
-# 2021 05 05 11:16 어린이날 
+# 2021 05 05 11:16 어린이날, 14:52 교수님 피드벡 -> 진폭에서 슬라이스, 피규어에 제목 18:45 
 
 import numpy as np
 from numpy import exp, pi, sin
@@ -15,35 +15,37 @@ warnings.filterwarnings(action='ignore')
 
 class backend:
 
-    file                  = 0   # 파일                              # [NxM]
-    columnDataLength      = 0   # 파일의 열 길이                    # N
+    file                  = 0   # 파일
+    columnDataLength      = 0   # 파일의 열 길이
     
-    orgnlData             = 0   # 데이터                            # [Nx1]
-    dcData                = 0   # 데이터 오프셋                     # N
-    lngthData             = 0   # 데이터 길이                       # N
+    orgnlData             = 0   # 데이터
+    dcData                = 0   # 데이터 오프셋
+    lngthData             = 0   # 데이터 길이
 
-    f                     = 0.2 # 샘플링 주파수
-    T                     = 1/f # 주기             
+    Fs                    = 0   # 샘플링 주파수
+    frqRez                = 0
+    T                     = 0   # 주기            
     
-    fftData               = 0   # 원 데이터를 푸리에 변환           # [Nx1]
-    amplt                 = 0   # 원 데이터의 진폭 스펙트럼         # [Nx1]
-    phase                 = 0   # 원 데이터의 위상 스펙트럼         # [Nx1]
+    fftData               = 0   # 원 데이터를 푸리에 변환
+    amplt                 = 0   # 원 데이터의 진폭 스펙트럼
+    phase                 = 0   # 원 데이터의 위상 스펙트럼
 
-    intrvlData            = []  #잘라낸 구간의 값들                # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
-    intrvl                = []  #잘려진 구간들의 위치              # list[ N, N, N, N ... ]
+    intrvlData            = []  #잘라낸 구간의 값들
+    intrvl                = []  #잘려진 구간들의 위치
 
-    slctFft               = []  #잘라낸 구간들의 fft               # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
-    slctAmplt             = []  #잘라낸 구간들의 amplt             # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
-    slctPhase             = []  #잘라낸 구간들의 phase             # list[ np[Nx1], np[Nx1], np[Nx1] ... ]
+    ampLst                = []  # 잘라낸 구간들의 진폭
+    phsLst                = []  # 잘라낸 구간들의 위상
 
+    resAmpLst             = [] # 결과를 계속 바꺼 저장할 변수
 
     error                 = 0   # 에러율
 
     fig1                  = 0   # 그래프 저장할 객체
     fig2                  = 0   # 잘라낸 그래프 저장할 객체
     fig3                  = 0   # 잘라낸 그래프 합성하기
+    fig4                  = 0   # 잘라낸 구간의 fft 
 
-    Y                     = 0
+    Y                     = 0   #
     
 
 
@@ -52,84 +54,96 @@ class backend:
     
     def run(self):
         self.loadFile('Normal_test.csv')
-        self.slctData(1)
+        self.slctData()
         self.initData()
 
         self.getOrgn()
+        
         self.getIntrvl()
+        self.fftIntrvl()
+        self.slctFft()
         self.genSgnl()
-##        self.synthetic()
-##        self.slctBySize()
-
-
-
-
 
 
         
-    # 파일 불러오기 ############################################################################
+    # 파일 불러오기
     def loadFile(self, _path):
-        self.file = np.genfromtxt( _path, delimiter = ',', dtype = float, encoding = 'UTF-8')
-        self.columnDataLength = self.file.shape[1]
+        self.file   = np.genfromtxt( _path, delimiter = ',', dtype = float, encoding = 'UTF-8')
+        size        = len( self.file.shape )
+
+        
+        if( size == 1 ):
+            self.columnDataLength = 1           
+        else:
+            self.columnDataLength = self.file.shape[1]
+            
+            
         self.row_name = np.genfromtxt( _path, delimiter = ',', dtype = str)[0]
-    # 파일 불러오기 end #########################################################################
 
 
-
-
-    # 파일 안에서 데이터 선택하기 ##############################################################
+        
+    # 파일 안에서 데이터 선택하기
     def slctData(self, _num = 0):
-        self.orgnlData = self.file[1:, _num] 
-    # 파일 안에서 데이터 선택하기 end ###########################################################
+        if ( self.columnDataLength == 1 ):
+            self.orgnlData = self.file[1:]
+        else:
+            self.orgnlData = self.file[1:, _num] 
 
 
 
   
-    # 변수 초기화 ##############################################################################
+    # 변수 초기화
     def initData(self):
         self.lngthData      = len( self.orgnlData )
         self.dcData         = self.orgnlData.mean()
-        self.orgnlData      = np.array([self.orgnlData - self.dcData]).T
+        self.orgnlData      = np.array( [self.orgnlData - self.dcData] ).T
 
-        hlfLngth            = self.lngthData // 2
-        
         self.fftData        = np.fft.fft( self.orgnlData, axis = 0) / self.lngthData
-        self.amplt          = 2 * abs( self.fftData[0:hlfLngth] )
-        self.phase          = np.angle( self.fftData[0:hlfLngth], deg = False)
-    # 변수 초기화 end #########################################################################
+        self.amplt          = 2 * abs( self.fftData[0:self.lngthData//2] )
+        self.phase          = np.angle( self.fftData[0:self.lngthData//2], deg = False)
+
+        self.Fs             = 0.2
+        self.T              = 1 / self.f
+        self.frqRez         = 1 / self.lngthData
 
     
 
-    # 구간 잘라내기 ##########################################################################
-    def getIntrvl(self, _intrvl = [0, 2500], _mult = [1, 1], _show = True ):
-        self.fig2 = plt.figure()
+    # 구간 잘라내기 
+    def getIntrvl(self, _intrvl = [0, 2500], _mult = [1], _show = True ):
+        self.fig2 = plt.figure("시계열 잘라낸 구간")
         
-        intrvlData  = []                    # 잘라낸 구간들
+        intrvlData  = []                    # 잘라낸 구간들을 저장
         grphLst     = []                    # 그래프를 저장할 리스트
-        cntSlct     = len(_intrvl) // 2     # 잘라낸 구간 갯수
+        cntIntrvl   = len(_intrvl) // 2     # 잘라낸 구간 갯수
+
+        data        = self.orgnlData
+        lngth       = self.lngthData
                       
-        # start, end값 잘라 내고 출력하기 
-        for i in range(0, cntSlct):
-            start   = _intrvl[i*2] 
+        # 구간 자르고 변수에 저장 
+        for i in range(0, cntIntrvl):
+            start   = _intrvl[i*2]
             end     = _intrvl[i*2+1]
 
 
             # 잘라낸 구간이 문제가 있으면
-            if ( start > end or start > self.lngthData or end > self.lngthData):
+            if ( start > end or start > lngth or end > lngth ):
                 return -1
             
-            step    = int( end - start )
-            cutSmpl = np.linspace(start, end, step, endpoint = False  )
+            num     = int( end - start )
+            cutSmpl = np.linspace(start, end, num, endpoint = False  )
+
+
+            #잘라내고 변수에 저장
+            intrvlData.append(  _mult[i] * data[start:end]  )
+
             
-            
-            intrvlData.append(  _mult[i] * self.orgnlData[start:end] )
-            
-            grphLst.append( self.fig2.add_subplot( cntSlct, 1, i +1))
+            # 그래프를 리스트에 저장
+            grphLst.append( self.fig2.add_subplot( cntIntrvl, 1, i +1))
             grphLst[i].plot(cutSmpl, intrvlData[i] )
             grphLst[i].grid()
-            grphLst[i].set_ylabel("x(t)")
+            grphLst[i].set_ylabel("x(t) - dcData")
             grphLst[i].set_xlabel("Interval samples")
-            grphLst[i].set_title(chr(65+i))
+            grphLst[i].set_title(chr(65+i) + " section")
         
         
         self.intrvlData = intrvlData                                                                                   
@@ -141,33 +155,33 @@ class backend:
             self.fig2.show()
         
         return self.fig2
-    # 구간 잘라내기 end #########################################################################
 
 
-    # 구간 합성하기 ############################################################################
+    # 구간 합성하기 
     def genSgnl(self, _cntSmpl = 2500, _show = True):
-        self.fig3   = plt.figure()
+        self.fig3   = plt.figure("합성 결과")
         cnt         = len( self.intrvlData )
 
         Y           = 0
         eY          = 0
+        
         for i in range( cnt ):
 
             lngth   = len( self.intrvlData[i] )
-            data    = self.intrvlData[i]
-            
-            fft     = np.fft.fft( data , axis = 0 ) / lngth                                                   
-            amplt   = 2*abs( fft[0: lngth//2] )                                                                           
-            phase   = np.angle( fft[0: lngth//2 ], deg = False )
+            amplt   = self.resAmpLst
+            phase   = self.phsLst
 
 
             f       = 1/self.lngthData
             t       = np.arange(0, _cntSmpl, 1);
             et      = np.arange(0, self.lngthData, 1)
+            
+
+
 
             for j in range(lngth//2):
-                A   = amplt[j]
-                q   = phase[j] + (pi/2)
+                A   = amplt[i][j]
+                q   = phase[i][j] + (pi/2)
                 Y   = Y + A*sin( 2*pi*j*f*t  + q )
                 eY  = eY + A*sin( 2*pi*j*f*et  + q )
 
@@ -194,14 +208,83 @@ class backend:
         
 
         return self.fig3
-    # 구간 합성하기 end ########################################################################
+
+
+    # 잘라낸 구간 fft 구하기
+    def fftIntrvl(self):
+
+        self.fig4 = plt.figure("잘라낸 구간들의 진폭 위상 ")
+
+        fftLst          = []
+        ampLst          = []
+        phsLst          = []
+
+        
+        data      = self.intrvlData
+        cnt             = len( data )
+        
+
+        for i in range( cnt ):
+            lngth   = len( data[i] )
+            fft     = np.fft.fft( data[i], axis = 0 ) / lngth
+            amp     = 2 * abs( fft )
+            phs     = np.angle( fft, deg = False )
+
+            start   = self.intrvl[i*2]
+            end     = self.intrvl[i*2+1]
+            num     = int( end - start )
+            
+            cutSmpl = np.linspace(start, end, num, endpoint = False )
+
+            fftLst.append( fft )
+            ampLst.append( amp[0 : lngth//2] )
+            phsLst.append( phs[0 : lngth//2] )
+
+
+            p = self.fig4.add_subplot(2, cnt, 1 + 2*i - i )
+            p.plot(cutSmpl, data[i] )
+            p.set_title( chr(65 + i ) + " section")
+            p.set_xlabel("Interval samples")
+            p.set_ylabel("x(t) - dcData")
+            plt.grid()
+
+            p = self.fig4.add_subplot(2, cnt, 1 + 2*i + cnt - i )
+            p.stem( ampLst[i] )
+            p.set_xlabel("Point[Hz]")
+            p.set_ylabel("∣X(f)∣")
+            plt.grid()
+
+        self.fig4.tight_layout()
+
+        self.ampLst = ampLst
+        self.phsLst = phsLst
+
+        
+
+        
 
 
 
-    # 데이터 저장하기 #############################################################################
+    # 잘라낸 구간 선택하기
+    def slctFft(self, _intrvl = [100,1250], _mult = [0]):
+
+        amp = self.ampLst
+        phs = self.phsLst
+
+        cnt = len( amp )
+
+        for i in range(cnt):
+            srt = _intrvl[i*2] 
+            end = _intrvl[i*2+1]
+
+            amp[i][srt:end] = amp[i][srt:end] * _mult[i]
+
+        self.resAmpLst = amp
+
+
+    # 데이터 저장하기
     def saveSgnl(self):
-        return np.array([self.Y]).T
-    # 데이터 저장하기 end #######################################################################
+        return np.array( [self.Y] ).T
 
 
     
@@ -209,9 +292,9 @@ class backend:
 
 
                                    
-    # 원 데이터, 진폭, 위상 출력 ##################################################################
+    # 원 데이터, 진폭, 위상 출력 
     def getOrgn(self, _show = False):
-        self.fig1    = plt.figure()
+        self.fig1    = plt.figure("원본 데이터의 FFT")
         plt1        = self.fig1.add_subplot(3,1,1)
         plt2        = self.fig1.add_subplot(3,1,2)
         plt3        = self.fig1.add_subplot(3,1,3)
@@ -233,14 +316,14 @@ class backend:
         # 진폭 스펙트럼 출력
         plt2.stem(cntHz,self.amplt)
         plt2.grid()
-        plt2.set_xlabel("Number[Hz]")
+        plt2.set_xlabel("Point[Hz]")
         plt2.set_ylabel("∣X(f)∣")
         plt2.set_title("Amplitude")
         
         # 위상 스펙트럼 출력
         plt3.stem(cntHz, self.phase)
         plt3.grid()
-        plt3.set_xlabel("Number[Hz]")
+        plt3.set_xlabel("Point[Hz]")
         plt3.set_ylabel("∠X(f)")
         plt3.set_title("Phase")
 
@@ -250,16 +333,13 @@ class backend:
             self.fig1.show()
         
         return self.fig1
-    # 원 데이터 진폭, 위상 출력 end #################################################################
+
 
 if __name__ == '__main__':
     test = backend()
     test.run()
 
 
-
-
-# ?
 
 
 ### 선택된 구간의 fft들 ########################################################################
