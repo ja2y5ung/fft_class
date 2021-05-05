@@ -110,11 +110,12 @@ class windowform1():
         self.fileMenu.entryconfig(0,state = "disable")
         
     def save_file(self):
-        csvfile = open(r"graph_data.csv","w", newline= "")
-        csvwrtier = csv.writer(csvfile)
-        for row in self.work.Y:
-            csvwriter.writerow(row)
-        csvfile.close()
+        print(self.work.Y.shape)
+##        csvfile = open(r"graph_data.csv","w", newline= "")
+##        csvwrtier = csv.writer(csvfile)
+##        for row in self.work.Y:
+##            csvwriter.writerow(row)
+##        csvfile.close()
 
     def exit_file(self):
         self.window.quit()
