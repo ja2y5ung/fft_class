@@ -381,10 +381,3 @@ window1 = windowform1()
 
 
 
-
-
-
-
-
-
-
