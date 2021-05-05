@@ -117,11 +117,6 @@ class windowform1():
                                                filetypes = (("csv files", "*.csv"), ("all files", "*.*")))
         self.YFrame.to_csv(str(self.filename2),index=False)
 
-##        self.savewin = tk.Tk()
-##        self.savewin.title('save')
-##        self.savewin.geometry("250x100+350+350")
-##        self.label_input(self.savewin,self.label6,"데이터를 저장 했습니다.","top")
-
     def exit_file(self):
         self.window.quit()
         self.window.destroy()
