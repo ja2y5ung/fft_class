@@ -109,7 +109,7 @@ class backend:
     
 
     # 구간 잘라내기 
-    def getIntrvl(self, _intrvl = [0, 2500], _mult = [1], _show = True ):
+    def getIntrvl(self, _intrvl = [0, 2500], _show = True ):
         self.fig2 = plt.figure("시계열 잘라낸 구간")
         
         intrvlData  = []                    # 잘라낸 구간들을 저장
@@ -134,7 +134,7 @@ class backend:
 
 
             #잘라내고 변수에 저장
-            intrvlData.append(  _mult[i] * data[start:end]  )
+            intrvlData.append(   data[start:end]  )
 
             
             # 그래프를 리스트에 저장
@@ -160,6 +160,7 @@ class backend:
     # 구간 합성하기 
     def genSgnl(self, _cntSmpl = 2500, _show = True):
         self.fig3   = plt.figure("합성 결과")
+        plt.cla()
         cnt         = len( self.intrvlData )
 
         Y           = 0
@@ -295,6 +296,7 @@ class backend:
     # 원 데이터, 진폭, 위상 출력 
     def getOrgn(self, _show = False):
         self.fig1    = plt.figure("원본 데이터의 FFT")
+        
         plt1        = self.fig1.add_subplot(3,1,1)
         plt2        = self.fig1.add_subplot(3,1,2)
         plt3        = self.fig1.add_subplot(3,1,3)
@@ -307,6 +309,7 @@ class backend:
 
 
         # 원 데이터 출력
+        
         plt1.plot(cntSmpl, self.orgnlData)
         plt1.grid()
         plt1.set_xlabel("Number of samples")
