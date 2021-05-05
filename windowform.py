@@ -6,7 +6,7 @@ from matplotlib.figure import Figure
 from back import backend
 import numpy as np
 import matplotlib.pyplot as plt
-import csv
+import pandas as pd
 
 class windowform1():
     num = 0
@@ -110,11 +110,15 @@ class windowform1():
         self.fileMenu.entryconfig(0,state = "disable")
         
     def save_file(self):
-        csvfile = open(r"graph_data.csv","w", newline= "")
-        csvwrtier = csv.writer(csvfile)
-        for row in self.work.Y:
-            csvwriter.writerow(row)
-        csvfile.close()
+        self.Y = self.work.saveSgnl()
+
+        self.YFrame = pd.DataFrame(self.Y)
+        self.YFrame.to_csv(r"graph_data.csv",header=False,index=False)
+##        csvfile = open(r"graph_data.csv","w", newline= "")
+##        csvwrtier = csv.writer(csvfile)
+##        for row in self.Y:
+##            csvwriter.writerow(row)
+##        csvfile.close()
 
     def exit_file(self):
         self.window.quit()
@@ -219,7 +223,8 @@ class windowform1():
                 self.list2[j].pack(side="top",fill = 'x')
                 self.list1.append(rng_box)
                 
-            self.label_input(self.frame6,self.label7,"● 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")           
+            self.label_input(self.frame6,self.label7,"● 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
+            self.label_input(self.frame6,self.label7,"● 0~12500 사이로 입력해주세요.","top")
             self.widget_clear(self.buttonframe)
             self.buttonframe2=tkinter.Frame(self.frame6, width=300, height = 350)
             self.buttonframe2.pack(side="bottom")  
