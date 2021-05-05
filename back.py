@@ -1,7 +1,7 @@
 # 2021 04 27 그래프의 축 값 계산, 그래프가 누적 오차가 생기는 듯한 현상 발견, 코드 길이 간결화
 # 2021 05 03 교수님 요구 사항 수정 : GUI  개선, 잘라낸 구간 증폭, 신호 생성 구간 설정, 데이터 저장, 에러처리
 # 2021 05 04 시발 왜 저장이 안됫지 시발 시발
-# 2021 05 05 11:16 어린이날, 14:52 교수님 피드벡 -> 진폭에서 슬라이스, 피규어에 제목 18:45 
+# 2021 05 05 11:16 어린이날, 14:52 교수님 피드벡 -> 진폭에서 슬라이스, 피규어에 제목
 
 import numpy as np
 from numpy import exp, pi, sin
@@ -87,7 +87,9 @@ class backend:
         if ( self.columnDataLength == 1 ):
             self.orgnlData = self.file[1:]
         else:
-            self.orgnlData = self.file[1:, _num] 
+            self.orgnlData = self.file[1:, _num]
+
+        plt.cla()
 
 
 
@@ -112,7 +114,7 @@ class backend:
     def getIntrvl(self, _intrvl = [0, 2500], _show = True ):
         self.fig2 = plt.figure("시계열 잘라낸 구간")
         
-        intrvlData  = []                    # 잘라낸 구간들을 저장
+        intrvLst    = []                    # 잘라낸 구간들을 저장
         grphLst     = []                    # 그래프를 저장할 리스트
         cntIntrvl   = len(_intrvl) // 2     # 잘라낸 구간 갯수
 
@@ -134,19 +136,19 @@ class backend:
 
 
             #잘라내고 변수에 저장
-            intrvlData.append(   data[start:end]  )
+            intrvLst.append(  data[start:end]  )
 
             
             # 그래프를 리스트에 저장
             grphLst.append( self.fig2.add_subplot( cntIntrvl, 1, i +1))
-            grphLst[i].plot(cutSmpl, intrvlData[i] )
+            grphLst[i].plot(cutSmpl, intrvLst[i] )
             grphLst[i].grid()
             grphLst[i].set_ylabel("x(t) - dcData")
             grphLst[i].set_xlabel("Interval samples")
             grphLst[i].set_title(chr(65+i) + " section")
         
         
-        self.intrvlData = intrvlData                                                                                   
+        self.intrvlData = intrvLst                                                                                   
         self.intrvl = _intrvl                                                                                          
         
         self.fig2.tight_layout()
@@ -160,7 +162,6 @@ class backend:
     # 구간 합성하기 
     def genSgnl(self, _cntSmpl = 2500, _show = True):
         self.fig3   = plt.figure("합성 결과")
-        plt.cla()
         cnt         = len( self.intrvlData )
 
         Y           = 0
@@ -188,8 +189,8 @@ class backend:
 
         self.Y = Y + self.dcData
         p       = self.fig3.add_subplot(1,1,1)
-        
-        p.plot(self.Y)
+        #p.plot(self.orgnlData + self.dcData)
+        p.plot(self.Y, 'r')
         p.set_xlabel("Number of samples")
         p.set_ylabel("x(t)")
         p.set_title(" Generate Signal ")
@@ -214,7 +215,8 @@ class backend:
     # 잘라낸 구간 fft 구하기
     def fftIntrvl(self):
 
-        self.fig4 = plt.figure("잘라낸 구간들의 진폭 위상 ")
+        self.fig4 = plt.figure("잘라낸 구간들의 진폭 위상")
+        plt.cla()
 
         fftLst          = []
         ampLst          = []
@@ -296,10 +298,7 @@ class backend:
     # 원 데이터, 진폭, 위상 출력 
     def getOrgn(self, _show = False):
         self.fig1    = plt.figure("원본 데이터의 FFT")
-        
-        plt1        = self.fig1.add_subplot(3,1,1)
-        plt2        = self.fig1.add_subplot(3,1,2)
-        plt3        = self.fig1.add_subplot(3,1,3)
+        plt.cla()
 
         #Hz          = np.linspace(0, self.f/2, self.lngthData//2, endpoint = False)
         #time        = np.linspace(0, self.lngthData * self.T, self.lngthData, endpoint = False)
@@ -309,26 +308,29 @@ class backend:
 
 
         # 원 데이터 출력
-        
-        plt1.plot(cntSmpl, self.orgnlData)
-        plt1.grid()
-        plt1.set_xlabel("Number of samples")
-        plt1.set_ylabel("x(t) - DC value")
-        plt1.set_title("Orignal")
+        p = self.fig1.add_subplot(3,1,1)
+        plt.cla()
+        p.plot(cntSmpl, self.orgnlData)
+        p.grid()
+        p.set_xlabel("Number of samples")
+        p.set_ylabel("x(t) - DC value")
+        p.set_title("Orignal")
         
         # 진폭 스펙트럼 출력
-        plt2.stem(cntHz,self.amplt)
-        plt2.grid()
-        plt2.set_xlabel("Point[Hz]")
-        plt2.set_ylabel("∣X(f)∣")
-        plt2.set_title("Amplitude")
+        p = self.fig1.add_subplot(3,1,2)
+        p.stem(cntHz,self.amplt)
+        p.grid()
+        p.set_xlabel("Point[Hz]")
+        p.set_ylabel("∣X(f)∣")
+        p.set_title("Amplitude")
         
         # 위상 스펙트럼 출력
-        plt3.stem(cntHz, self.phase)
-        plt3.grid()
-        plt3.set_xlabel("Point[Hz]")
-        plt3.set_ylabel("∠X(f)")
-        plt3.set_title("Phase")
+        p = self.fig1.add_subplot(3,1,3)
+        p.stem(cntHz, self.phase)
+        p.grid()
+        p.set_xlabel("Point[Hz]")
+        p.set_ylabel("∠X(f)")
+        p.set_title("Phase")
 
         self.fig1.tight_layout()
 
