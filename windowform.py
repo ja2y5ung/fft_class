@@ -6,7 +6,7 @@ from matplotlib.figure import Figure
 from back import backend
 import numpy as np
 import matplotlib.pyplot as plt
-import csv
+import pandas as pd
 
 class windowform1():
     num = 0
@@ -110,10 +110,13 @@ class windowform1():
         self.fileMenu.entryconfig(0,state = "disable")
         
     def save_file(self):
-        print(self.work.Y.shape)
+        self.Y = self.work.saveSgnl()
+
+        self.YFrame = pd.DataFrame(self.Y)
+        self.YFrame.to_csv(r"graph_data.csv",header=False,index=False)
 ##        csvfile = open(r"graph_data.csv","w", newline= "")
 ##        csvwrtier = csv.writer(csvfile)
-##        for row in self.work.Y:
+##        for row in self.Y:
 ##            csvwriter.writerow(row)
 ##        csvfile.close()
 
