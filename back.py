@@ -1,6 +1,7 @@
 # 2021 04 27 그래프의 축 값 계산, 그래프가 누적 오차가 생기는 듯한 현상 발견, 코드 길이 간결화
 # 2021 05 03 교수님 요구 사항 수정 : GUI  개선, 잘라낸 구간 증폭, 신호 생성 구간 설정, 데이터 저장, 에러처리
 # 2021 05 04 시발 왜 저장이 안됫지 시발 시발
+# 2021 05 05 11:16 어린이날 
 
 import numpy as np
 from numpy import exp, pi, sin
@@ -114,14 +115,15 @@ class backend:
 
 
             # 잘라낸 구간이 문제가 있으면
-            if ( start > end ):
+            if ( start > end or start > self.lngthData or end > self.lngthData):
                 return -1
             
             step    = int( end - start )
             cutSmpl = np.linspace(start, end, step, endpoint = False  )
             
             
-            intrvlData.append(  _mult[i] * self.orgnlData[start:end] )                                                                 
+            intrvlData.append(  _mult[i] * self.orgnlData[start:end] )
+            
             grphLst.append( self.fig2.add_subplot( cntSlct, 1, i +1))
             grphLst[i].plot(cutSmpl, intrvlData[i] )
             grphLst[i].grid()
@@ -198,7 +200,7 @@ class backend:
 
     # 데이터 저장하기 #############################################################################
     def saveSgnl(self):
-        return self.Y
+        return np.array([self.Y]).T
     # 데이터 저장하기 end #######################################################################
 
 
@@ -225,7 +227,7 @@ class backend:
         plt1.plot(cntSmpl, self.orgnlData)
         plt1.grid()
         plt1.set_xlabel("Number of samples")
-        plt1.set_ylabel("x(t) - offset")
+        plt1.set_ylabel("x(t) - DC value")
         plt1.set_title("Orignal")
         
         # 진폭 스펙트럼 출력
