@@ -115,7 +115,7 @@ class backend:
     
 
     # 구간 잘라내기 
-    def getIntrvl(self, _intrvl = [200,600,2000,2400], _show = True ):
+    def getIntrvl(self, _intrvl = [100,200], _show = True ):
 
         
         
@@ -305,7 +305,7 @@ class backend:
 
 
     # 잘라낸 구간 선택하기
-    def slctFft(self, _intrvl = [20,50,80,90,30,45,100,200], _mult = [1.3,0.5,1.2,0.9]):
+    def slctFft(self, _intrvl = [20,30], _mult = [1]):
         
         self.fig4 = plt.figure("잘라낸 구간들의 진폭")
         amp = self.ampLst
@@ -332,8 +332,8 @@ class backend:
 
 
                 if ( len( _mult ) // 2 ) == 0:
-                    srt = _intrvl[2*i+k*cnt] 
-                    end = _intrvl[2*i+k*cnt+1]
+                    srt = _intrvl[2*i] 
+                    end = _intrvl[2*i+1]
                     cutHz = np.linspace(srt, end, end - srt, endpoint = False )
                     p.stem(cutHz, amp[i][srt:end], linefmt = 'orange', markerfmt = 'none' )
                     p.set_ylabel("∣X(f)∣")
