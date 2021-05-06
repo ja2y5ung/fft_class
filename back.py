@@ -332,8 +332,8 @@ class backend:
 
 
                 if ( len( _mult ) // 2 ) == 0:
-                    srt = _intrvl[2*i+k*cnt] 
-                    end = _intrvl[2*i+k*cnt+1]
+                    srt = _intrvl[2*i] 
+                    end = _intrvl[2*i+1]
                     cutHz = np.linspace(srt, end, end - srt, endpoint = False )
                     p.stem(cutHz, amp[i][srt:end], linefmt = 'orange', markerfmt = 'none' )
                     p.set_ylabel("∣X(f)∣")
