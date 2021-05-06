@@ -24,7 +24,7 @@ class backend:
     lngthData             = 0   # 데이터 길이
 
     Fs                    = 0   # 샘플링 주파수
-    frqRez                = 0
+    frqRez                = 0   # 주파수 해상도
     T                     = 0   # 주기            
     
     fftData               = 0   # 원 데이터를 푸리에 변환
@@ -110,7 +110,7 @@ class backend:
 
         self.Fs             = 0.2
         self.T              = 1 / self.Fs
-        self.frqRez         = 1 / self.lngthData
+        self.frqRez         = self.Fs / self.lngthData
 
     
 
