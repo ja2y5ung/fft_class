@@ -302,7 +302,6 @@ class backend:
 
 
                 for k in range( len( _mult ) // 2 ):
-                    breakpoint()
                     srt = _intrvl[2*i+k*cnt] 
                     end = _intrvl[2*i+k*cnt+1]
                     cutHz = np.linspace(srt, end, end - srt, endpoint = False )

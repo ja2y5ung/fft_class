@@ -270,7 +270,6 @@ class windowform1():
 
 
     def hz_range_num(self):
-        self.widget_clear(self.empty_frame2)
         start_end_list,exp_list = [], []
         for textbox in self.list1:
             a = list(map(int, textbox.get().split(',')))
@@ -280,9 +279,12 @@ class windowform1():
         self.work.getIntrvl(start_end_list)
         
         self.fileMenu2.entryconfig(2,state = "normal")
+        self.widget_clear(self.empty_frame2)
         self.widget_clear(self.hzSlctframe)
         self.widget_clear(self.hzrangeSlctframe)
         self.widget_clear(self.buttonframe2)
+        self.widget_clear(self.empty_frame3)
+        self.widget_clear(self.sampleframe)
         
         self.hzrempty_frame = tkinter.Frame(self.frame4, width=300, height = 20)
         self.hzrempty_frame.pack(side="top",fill = 'x')
@@ -315,7 +317,6 @@ class windowform1():
             self.hzlist2.append(rng_exp_frame2)
         for j in range( int(self.text_box.get())):
             for k in range(int(self.text_box2.get())):
-                print(self.chlistcount)
                 self.label_input(self.hzSlctframe,self.label6,"- " + chr(self.chrcount+65) + " section - ","top")
                 rng_box2 = self.text_input2(self.hzlist2[self.chlistcount], self.hzlist2[self.chlistcount], self.label6," 범위 : ",10,"left","left")
                 exp_box = self.text_input2(self.hzlist2[self.chlistcount], self.hzlist2[self.chlistcount], self.label6,"   확대 비율 : ",10,"left","left")
@@ -338,7 +339,8 @@ class windowform1():
         self.button_input(self.hzrbuttonframe,"갯수 리셋",self.hz_range_num,10,"left")
         
     def confirm2(self):
-        self.widget_clear(self.buttonframe3)
+        self.widget_clear(self.empty_frame3)
+        self.widget_clear(self.sampleframe)
         start_end_list2, exp_list2 = [], []
         for textbox in self.hzlist1:
             a = list(map(int, textbox.get().split(',')))
@@ -357,11 +359,6 @@ class windowform1():
         self.sampleframe.pack(side = "top",fill = 'x')
         self.sample_box2 = self.text_input(self.sampleframe, self.sample_label, " < 샘플 갯수 입력 > ",10,"top","top")
         self.button_input(self.sampleframe,"입   력",self.sample_choice,10,"bottom")        
-        self.widget_clear(self.buttonframe2)
-        self.buttonframe3=tkinter.Frame(self.hzSlctframe, width=300, height = 350)
-        self.buttonframe3.pack(side="bottom")        
-        self.button_input(self.buttonframe3,"범위 리셋",self.hz_range,10,"left")
-
     
     def sample_choice(self):
         self.work.genSgnl(int(self.sample_box2.get()))
