@@ -3,7 +3,7 @@
 # 2021 05 04 시발 왜 저장이 안됫지 시발 시발
 # 2021 05 05 11:16 어린이날, 14:52 교수님 피드벡 -> 진폭에서 슬라이스, 피규어에 제목, 20:43 -> 집에와서 수정하려고 함
 # 2021 05 06 01:30 새벽 그래프 겹치게 그려서 좀 변화한게 잘 보이도록 수정함, 해야할 것 : 오류 계산과 원그래프와 비교 그래프
-
+# 2021 05 06 14:14 slctItrvl 메서드에서 리스트 범위를 넘는 문제 해
 import numpy as np
 from numpy import exp, pi, sin
 from matplotlib import pyplot as plt
@@ -112,7 +112,7 @@ class backend:
     
 
     # 구간 잘라내기 
-    def getIntrvl(self, _intrvl = [0, 1000,2000,2500], _show = True ):
+    def getIntrvl(self, _intrvl = [100,200,500,600], _show = True ):
 
         
         
@@ -277,7 +277,7 @@ class backend:
 
 
     # 잘라낸 구간 선택하기
-    def slctFft(self, _intrvl = [100,150,50,80,0,80,200,230], _mult = [1.3,0.5,0.9,1.2]):
+    def slctFft(self, _intrvl = [0,20,25,40], _mult = [1.3,0.5]):
         
         self.fig4 = plt.figure("잘라낸 구간들의 진폭")
         amp = self.ampLst
@@ -290,12 +290,11 @@ class backend:
             Hz              = np.linspace(0, len(self.intrvlData[i])//2, len(self.intrvlData[i])//2, endpoint = False )
             
             for j in range( len( _intrvl ) //(2 * cnt ) ):
-                srt = _intrvl[(j+i*2)*2] 
-                end = _intrvl[(j+i*2)*2+1]
+                
+                srt = _intrvl[2*i+j*cnt] 
+                end = _intrvl[2*i+j*cnt+1]
 
-
-
-                amp[i][srt:end] = amp[i][srt:end] * _mult[j+2*i]
+                amp[i][srt:end] = amp[i][srt:end] * _mult[i*(len(_mult)//2)+j]
 
                 
                 plt.cla()
@@ -303,8 +302,9 @@ class backend:
 
 
                 for k in range( len( _mult ) // 2 ):
-                    srt = _intrvl[(k+i*2)*2] 
-                    end = _intrvl[(k+i*2)*2+1]
+                    breakpoint()
+                    srt = _intrvl[2*i+k*cnt] 
+                    end = _intrvl[2*i+k*cnt+1]
                     cutHz = np.linspace(srt, end, end - srt, endpoint = False )
                     p.stem(cutHz, amp[i][srt:end], linefmt = 'orange', markerfmt = 'none' )
                     p.set_ylabel("∣X(f)∣")
