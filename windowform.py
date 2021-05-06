@@ -79,11 +79,19 @@ class windowform1():
         #error 상태 프레임
         self.errframe=tkinter.Frame(self.frame7, width=300, height = 100)
         self.errframe.pack(side="left")
+        #sample 갯수 프레임
+        self.spframe=tkinter.Frame(self.frame7, width=300, height = 100)
+        self.spframe.pack(side="left")
+        #frequancy 프레임
+        self.freframe=tkinter.Frame(self.frame7, width=300, height = 100)
+        self.freframe.pack(side="left")        
         #샘플 선택 프레임
         self.sampleframe=tkinter.Frame(self.topframe, width=300, height = 100)
         #버튼 프레임
         self.buttonframe2=tkinter.Frame(self.topframe, width=300, height = 100)
         self.buttonframe3=tkinter.Frame(self.topframe, width=300, height = 100)
+        #에러 그래프 프레임
+        self.errorgrframe = tkinter.Frame(self.topframe, width=300, height = 100)
         #빈 프레임
         self.empty_frame=tkinter.Frame(self.frame4, width=300, height = 100)
         self.empty_frame2=tkinter.Frame(self.frame4, width=300, height = 100)
@@ -105,6 +113,8 @@ class windowform1():
         self.label_input(self.dcframe,self.label5,"< DC value >","top")
         self.label_input(self.srframe,self.label5,"< sampling rate >","top")
         self.label_input(self.errframe,self.label5,"< error >","top")
+        self.label_input(self.spframe,self.label5,"< number of sample >","top")
+        self.label_input(self.freframe,self.label5,"< frequancy resolution >","top")
         
         
         self.dc = tk.StringVar(self.frame1)
@@ -113,10 +123,17 @@ class windowform1():
         self.sr.set("0")
         self.er = tk.StringVar(self.frame1)
         self.er.set("None")
+        self.sp = tk.StringVar(self.frame1)
+        self.sp.set("0")
+        self.fr = tk.StringVar(self.frame1)
+        self.fr.set("0")
         
         self.text_label_input(self.dcframe,self.label2,str(self.dc))
         self.text_label_input(self.srframe,self.label2,str(self.sr))
         self.text_label_input(self.errframe,self.label2,str(self.er))
+        self.text_label_input(self.spframe,self.label2,str(self.sp))
+        self.text_label_input(self.freframe,self.label2, str(self.fr))
+        
         
         self.fileMenu.entryconfig(0,state = "disable")
         
@@ -162,6 +179,8 @@ class windowform1():
         self.draw_figure(self.canvas, self.work.fig1, self.canvasframe)
         self.dc.set(self.work.dcData)
         self.sr.set(self.work.Fs)
+        self.sp.set(self.work.lngthData)
+        self.fr.set(self.work.frqRez)
         self.fileMenu2.entryconfig(0,state = "normal")
         self.widget_clear(self.frame4)
         self.widget_clear(self.frame5)
@@ -270,7 +289,6 @@ class windowform1():
 
 
     def hz_range_num(self):
-        self.widget_clear(self.empty_frame2)
         start_end_list,exp_list = [], []
         for textbox in self.list1:
             a = list(map(int, textbox.get().split(',')))
@@ -280,9 +298,12 @@ class windowform1():
         self.work.getIntrvl(start_end_list)
         
         self.fileMenu2.entryconfig(2,state = "normal")
+        self.widget_clear(self.empty_frame2)
         self.widget_clear(self.hzSlctframe)
         self.widget_clear(self.hzrangeSlctframe)
         self.widget_clear(self.buttonframe2)
+        self.widget_clear(self.empty_frame3)
+        self.widget_clear(self.sampleframe)
         
         self.hzrempty_frame = tkinter.Frame(self.frame4, width=300, height = 20)
         self.hzrempty_frame.pack(side="top",fill = 'x')
@@ -315,7 +336,6 @@ class windowform1():
             self.hzlist2.append(rng_exp_frame2)
         for j in range( int(self.text_box.get())):
             for k in range(int(self.text_box2.get())):
-                print(self.chlistcount)
                 self.label_input(self.hzSlctframe,self.label6,"- " + chr(self.chrcount+65) + " section - ","top")
                 rng_box2 = self.text_input2(self.hzlist2[self.chlistcount], self.hzlist2[self.chlistcount], self.label6," 범위 : ",10,"left","left")
                 exp_box = self.text_input2(self.hzlist2[self.chlistcount], self.hzlist2[self.chlistcount], self.label6,"   확대 비율 : ",10,"left","left")
@@ -327,8 +347,9 @@ class windowform1():
             self.chrcount+=1
             
         self.label_input(self.hzSlctframe,self.label7,"● 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
-        self.label_input(self.hzSlctframe,self.label7,"● 0~" + str(self.work.lngthData//2) +" 사이로 입력해주세요.","top")
-        
+        for i in range(len(self.work.maxIntrvl)):
+            self.label_input(self.hzSlctframe,self.label7,"● " + chr(i+65) + " : 0~" + str(self.work.maxIntrvl[i]//2) +" 사이로 입력해주세요.","top")
+ 
         self.buttonframe3=tkinter.Frame(self.hzSlctframe, width=300, height = 350)
         self.buttonframe3.pack(side="bottom")  
         self.button_input(self.buttonframe3,"입   력",self.confirm2,10,"left")
@@ -338,7 +359,9 @@ class windowform1():
         self.button_input(self.hzrbuttonframe,"갯수 리셋",self.hz_range_num,10,"left")
         
     def confirm2(self):
-        self.widget_clear(self.buttonframe3)
+        self.widget_clear(self.empty_frame3)
+        self.widget_clear(self.sampleframe)
+        
         start_end_list2, exp_list2 = [], []
         for textbox in self.hzlist1:
             a = list(map(int, textbox.get().split(',')))
@@ -357,16 +380,19 @@ class windowform1():
         self.sampleframe.pack(side = "top",fill = 'x')
         self.sample_box2 = self.text_input(self.sampleframe, self.sample_label, " < 샘플 갯수 입력 > ",10,"top","top")
         self.button_input(self.sampleframe,"입   력",self.sample_choice,10,"bottom")        
-        self.widget_clear(self.buttonframe2)
-        self.buttonframe3=tkinter.Frame(self.hzSlctframe, width=300, height = 350)
-        self.buttonframe3.pack(side="bottom")        
-        self.button_input(self.buttonframe3,"범위 리셋",self.hz_range,10,"left")
-
     
     def sample_choice(self):
+        self.widget_clear(self.errorgrframe)
+         
+        self.errorgrframe = tkinter.Frame(self.sampleframe, width=300, height = 20)
+        self.errorgrframe.pack(side = "top",fill = 'x')
         self.work.genSgnl(int(self.sample_box2.get()))
         self.er.set(self.work.error)
         self.fileMenu.entryconfig(1,state = "normal")
+        self.button_input(self.errorgrframe,"에러 그래프",self.error_graph,10,"left")
+        
+    def error_graph(self):
+        self.work.showErorr()
         
     def test2(self):
         self.widget_clear(self.frame6)
