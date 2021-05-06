@@ -1,7 +1,7 @@
 # 2021 04 27 그래프의 축 값 계산, 그래프가 누적 오차가 생기는 듯한 현상 발견, 코드 길이 간결화
 # 2021 05 03 교수님 요구 사항 수정 : GUI  개선, 잘라낸 구간 증폭, 신호 생성 구간 설정, 데이터 저장, 에러처리
 # 2021 05 04 시발 왜 저장이 안됫지 시발 시발
-# 2021 05 05 11:16 어린이날, 14:52 교수님 피드벡 -> 진폭에서 슬라이스, 피규어에 제목
+# 2021 05 05 11:16 어린이날, 14:52 교수님 피드벡 -> 진폭에서 슬라이스, 피규어에 제목, 20:43 -> 집에와서 수정하려고 함
 
 import numpy as np
 from numpy import exp, pi, sin
@@ -60,9 +60,9 @@ class backend:
         self.getOrgn()
         
         self.getIntrvl()
-        self.fftIntrvl()
-        self.slctFft()
-        self.genSgnl()
+        #self.fftIntrvl()
+        #self.slctFft()
+        #self.genSgnl()
 
 
         
@@ -111,11 +111,17 @@ class backend:
     
 
     # 구간 잘라내기 
-    def getIntrvl(self, _intrvl = [0, 2500], _show = True ):
+    def getIntrvl(self, _intrvl = [0, 100,900,1000], _show = True ):
+        
         self.fig2 = plt.figure("시계열 잘라낸 구간")
+        plt.cla()
+        p = self.fig2.add_subplot(1,1,1)
+        p.plot(np.arange(0, 2500,1), self.orgnlData)
+        
         
         intrvLst    = []                    # 잘라낸 구간들을 저장
         grphLst     = []                    # 그래프를 저장할 리스트
+        pltLgn      = ['original']          # 그래프 레전드
         cntIntrvl   = len(_intrvl) // 2     # 잘라낸 구간 갯수
 
         data        = self.orgnlData
@@ -139,13 +145,23 @@ class backend:
             intrvLst.append(  data[start:end]  )
 
             
-            # 그래프를 리스트에 저장
-            grphLst.append( self.fig2.add_subplot( cntIntrvl, 1, i +1))
-            grphLst[i].plot(cutSmpl, intrvLst[i] )
-            grphLst[i].grid()
-            grphLst[i].set_ylabel("x(t) - dcData")
-            grphLst[i].set_xlabel("Interval samples")
-            grphLst[i].set_title(chr(65+i) + " section")
+            # 그래프를 리스트에 저장         
+            p.plot(cutSmpl, intrvLst[i])
+            p.set_xlabel(" Number of samples ")
+            p.set_ylabel(" x(t) - dcData " )
+            pltLgn.append(chr(65+i) + " section")
+
+            
+        plt.grid()
+        plt.legend(pltLgn)
+
+            
+##            grphLst.append( self.fig2.add_subplot( cntIntrvl, 1, i +1))
+##            grphLst[i].plot(cutSmpl, intrvLst[i] )
+##            grphLst[i].grid()
+##            grphLst[i].set_ylabel("x(t) - dcData")
+##            grphLst[i].set_xlabel("Interval samples")
+##            grphLst[i].set_title(chr(65+i) + " section")
         
         
         self.intrvlData = intrvLst                                                                                   
@@ -223,7 +239,7 @@ class backend:
         phsLst          = []
 
         
-        data      = self.intrvlData
+        data            = self.intrvlData
         cnt             = len( data )
         
 
