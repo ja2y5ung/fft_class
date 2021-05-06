@@ -2,7 +2,8 @@
 # 2021 05 03 교수님 요구 사항 수정 : GUI  개선, 잘라낸 구간 증폭, 신호 생성 구간 설정, 데이터 저장, 에러처리
 # 2021 05 04 시발 왜 저장이 안됫지 시발 시발
 # 2021 05 05 11:16 어린이날, 14:52 교수님 피드벡 -> 진폭에서 슬라이스, 피규어에 제목, 20:43 -> 집에와서 수정하려고 함
-
+# 2021 05 06 01:30 새벽 그래프 겹치게 그려서 좀 변화한게 잘 보이도록 수정함, 해야할 것 : 오류 계산과 원그래프와 비교 그래프
+# 2021 05 06 14:14 slctItrvl 메서드에서 리스트 범위를 넘는 문제 해
 import numpy as np
 from numpy import exp, pi, sin
 from matplotlib import pyplot as plt
@@ -23,7 +24,7 @@ class backend:
     lngthData             = 0   # 데이터 길이
 
     Fs                    = 0   # 샘플링 주파수
-    frqRez                = 0
+    frqRez                = 0   # 주파수 해상도
     T                     = 0   # 주기            
     
     fftData               = 0   # 원 데이터를 푸리에 변환
@@ -37,15 +38,18 @@ class backend:
     phsLst                = []  # 잘라낸 구간들의 위상
 
     resAmpLst             = [] # 결과를 계속 바꺼 저장할 변수
+    maxIntrvl             = []
 
     error                 = 0   # 에러율
 
     fig1                  = 0   # 그래프 저장할 객체
     fig2                  = 0   # 잘라낸 그래프 저장할 객체
     fig3                  = 0   # 잘라낸 그래프 합성하기
-    fig4                  = 0   # 잘라낸 구간의 fft 
+    fig4                  = 0   # 잘라낸 구간의 fft
+    fig5                  = 0   # 에러 그래프
 
-    Y                     = 0   #
+    Y                     = 0   # 최종결과
+    eY                    = 0   #에러 비교 
     
 
 
@@ -60,9 +64,9 @@ class backend:
         self.getOrgn()
         
         self.getIntrvl()
-        #self.fftIntrvl()
-        #self.slctFft()
-        #self.genSgnl()
+        self.fftIntrvl()
+        self.slctFft()
+        self.genSgnl()
 
 
         
@@ -106,12 +110,14 @@ class backend:
 
         self.Fs             = 0.2
         self.T              = 1 / self.Fs
-        self.frqRez         = 1 / self.lngthData
+        self.frqRez         = self.Fs / self.lngthData
 
     
 
     # 구간 잘라내기 
-    def getIntrvl(self, _intrvl = [0, 100,900,1000], _show = True ):
+    def getIntrvl(self, _intrvl = [100,200], _show = True ):
+
+        
         
         self.fig2 = plt.figure("시계열 잘라낸 구간")
         plt.cla()
@@ -120,9 +126,9 @@ class backend:
         
         
         intrvLst    = []                    # 잘라낸 구간들을 저장
-        grphLst     = []                    # 그래프를 저장할 리스트
-        pltLgn      = ['original']          # 그래프 레전드
+        pltLgn      = ['Original']          # 그래프 레전드
         cntIntrvl   = len(_intrvl) // 2     # 잘라낸 구간 갯수
+        maxIntrvl   = []
 
         data        = self.orgnlData
         lngth       = self.lngthData
@@ -138,6 +144,7 @@ class backend:
                 return -1
             
             num     = int( end - start )
+            maxIntrvl.append(num)
             cutSmpl = np.linspace(start, end, num, endpoint = False  )
 
 
@@ -149,28 +156,23 @@ class backend:
             p.plot(cutSmpl, intrvLst[i])
             p.set_xlabel(" Number of samples ")
             p.set_ylabel(" x(t) - dcData " )
-            pltLgn.append(chr(65+i) + " section")
+            pltLgn.append("Section " + chr(65+i) )
 
             
         plt.grid()
         plt.legend(pltLgn)
-
-            
-##            grphLst.append( self.fig2.add_subplot( cntIntrvl, 1, i +1))
-##            grphLst[i].plot(cutSmpl, intrvLst[i] )
-##            grphLst[i].grid()
-##            grphLst[i].set_ylabel("x(t) - dcData")
-##            grphLst[i].set_xlabel("Interval samples")
-##            grphLst[i].set_title(chr(65+i) + " section")
         
         
         self.intrvlData = intrvLst                                                                                   
-        self.intrvl = _intrvl                                                                                          
+        self.intrvl = _intrvl
+        self.maxIntrvl = maxIntrvl
         
         self.fig2.tight_layout()
 
         if( _show ):
             self.fig2.show()
+            
+        self.fftIntrvl()
         
         return self.fig2
 
@@ -178,6 +180,7 @@ class backend:
     # 구간 합성하기 
     def genSgnl(self, _cntSmpl = 2500, _show = True):
         self.fig3   = plt.figure("합성 결과")
+        plt.cla()
         cnt         = len( self.intrvlData )
 
         Y           = 0
@@ -204,9 +207,9 @@ class backend:
                 eY  = eY + A*sin( 2*pi*j*f*et  + q )
 
         self.Y = Y + self.dcData
+        self.eY = eY + self.dcData
         p       = self.fig3.add_subplot(1,1,1)
-        #p.plot(self.orgnlData + self.dcData)
-        p.plot(self.Y, 'r')
+        p.plot(self.Y,)
         p.set_xlabel("Number of samples")
         p.set_ylabel("x(t)")
         p.set_title(" Generate Signal ")
@@ -224,16 +227,36 @@ class backend:
         if (_show):
             self.fig3.show()
         
-
+        
         return self.fig3
 
+
+    # 에러 그래프 출력
+    def showErorr(self):
+        self.fig5 = plt.figure(" 신호 오차 " )
+        plt.cla()
+
+        p = self.fig5.add_subplot(1,1,1)
+        t = np.linspace(0, self.lngthData, self.lngthData, endpoint = False )
+        p.plot(t, self.orgnlData + self.dcData)
+        p.plot(t, self.eY, 'r')
+        p.set_title("Error")
+        p.set_xlabel("Number of samples")
+        p.set_ylabel("x(t)")
+        plt.grid()
+
+        plt.legend(['Original', 'Result'])
+
+        self.fig5.show()
+        
+        
+        
 
     # 잘라낸 구간 fft 구하기
     def fftIntrvl(self):
 
-        self.fig4 = plt.figure("잘라낸 구간들의 진폭 위상")
-        plt.cla()
-
+        self.fig4 = plt.figure("잘라낸 구간들의 진폭")
+        plt.clf()
         fftLst          = []
         ampLst          = []
         phsLst          = []
@@ -262,42 +285,75 @@ class backend:
 
             p = self.fig4.add_subplot(2, cnt, 1 + 2*i - i )
             p.plot(cutSmpl, data[i] )
-            p.set_title( chr(65 + i ) + " section")
+            p.set_title( 'Section ' + chr(65 + i ) )
             p.set_xlabel("Interval samples")
             p.set_ylabel("x(t) - dcData")
             plt.grid()
 
             p = self.fig4.add_subplot(2, cnt, 1 + 2*i + cnt - i )
-            p.stem( ampLst[i] )
+            p.stem( ampLst[i], markerfmt  = 'none' )
             p.set_xlabel("Point[Hz]")
             p.set_ylabel("∣X(f)∣")
             plt.grid()
 
         self.fig4.tight_layout()
 
+        self.fig4.show()
+
         self.ampLst = ampLst
         self.phsLst = phsLst
 
-        
-
-        
-
-
 
     # 잘라낸 구간 선택하기
-    def slctFft(self, _intrvl = [100,1250], _mult = [0]):
-
+    def slctFft(self, _intrvl = [20,30], _mult = [1]):
+        
+        self.fig4 = plt.figure("잘라낸 구간들의 진폭")
         amp = self.ampLst
         phs = self.phsLst
 
-        cnt = len( amp )
+
+        cnt = len( amp ) 
 
         for i in range(cnt):
-            srt = _intrvl[i*2] 
-            end = _intrvl[i*2+1]
+            p               = self.fig4.add_subplot(2, cnt, 1+2*i+cnt-i)
+            Hz              = np.linspace(0, len(self.intrvlData[i])//2, len(self.intrvlData[i])//2, endpoint = False )
+            
+            for j in range( len( _intrvl ) //(2 * cnt ) ):
+                
+                srt = _intrvl[2*i+j*cnt] 
+                end = _intrvl[2*i+j*cnt+1]
 
-            amp[i][srt:end] = amp[i][srt:end] * _mult[i]
 
+                amp[i][srt:end] = amp[i][srt:end] * _mult[i*(len(_mult)//2)+j]
+
+                
+                plt.cla()
+                p.stem(Hz, amp[i], markerfmt = 'none')
+
+
+                if ( len( _mult ) // 2 ) == 0:
+                    srt = _intrvl[2*i] 
+                    end = _intrvl[2*i+1]
+                    cutHz = np.linspace(srt, end, end - srt, endpoint = False )
+                    p.stem(cutHz, amp[i][srt:end], linefmt = 'orange', markerfmt = 'none' )
+                    p.set_ylabel("∣X(f)∣")
+                    p.set_xlabel('Point[Hz]')
+                    plt.grid()
+
+
+                for k in range( len( _mult ) // 2 ):
+                    srt = _intrvl[2*i+k*cnt] 
+                    end = _intrvl[2*i+k*cnt+1]
+                    cutHz = np.linspace(srt, end, end - srt, endpoint = False )
+                    p.stem(cutHz, amp[i][srt:end], linefmt = 'orange', markerfmt = 'none' )
+                    p.set_ylabel("∣X(f)∣")
+                    p.set_xlabel('Point[Hz]')
+                    plt.grid()
+
+                    
+        self.fig4.show()
+
+        
         self.resAmpLst = amp
 
 
@@ -305,12 +361,7 @@ class backend:
     def saveSgnl(self):
         return np.array( [self.Y] ).T
 
-
-    
-
-
-
-                                   
+                               
     # 원 데이터, 진폭, 위상 출력 
     def getOrgn(self, _show = False):
         self.fig1    = plt.figure("원본 데이터의 FFT")

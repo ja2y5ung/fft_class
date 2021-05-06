@@ -288,7 +288,7 @@ class windowform1():
         self.hzrempty_frame.pack(side="top",fill = 'x')
         self.hzrangeSlctframe=tkinter.Frame(self.frame4, width=300, height = 150)
         self.hzrangeSlctframe.pack(side="top",fill = 'x')
-        self.text_box = self.text_input(self.hzrangeSlctframe,self.label3,"  < 주파수 범위 갯수 입력 (1이상 정수만 입력) >  ",10,"top","top")
+        self.text_box2 = self.text_input(self.hzrangeSlctframe,self.label3,"  < 주파수 범위 갯수 입력 (1이상 정수만 입력) >  ",10,"top","top")
         self.hzrbuttonframe=tkinter.Frame(self.hzrangeSlctframe, width=300, height = 350)
         self.hzrbuttonframe.pack(side="bottom")        
         self.button_input(self.hzrbuttonframe,"입   력",self.hz_range,10,"left")        
@@ -302,6 +302,7 @@ class windowform1():
         self.widget_clear(self.hzrbuttonframe)
         self.widget_clear(self.empty_frame3)
         self.widget_clear(self.sampleframe)
+        self.chrcount = 0;self.chlistcount = 0
         
         self.hzlist1,self.hzlist2,self.hzlist3 = [], [], []
         self.empty_frame2 = tkinter.Frame(self.frame4, width=300, height = 20)
@@ -309,17 +310,21 @@ class windowform1():
         self.hzSlctframe=tkinter.Frame(self.frame4, width=300, height = 350, relief="solid", bd=1)
         self.hzSlctframe.pack(side="top",fill = 'x')
         self.label_input(self.hzSlctframe,self.label6," < 주파수 범위 입력 > ","top")        
-        for i in range(int(self.text_box.get())):
+        for i in range( int(self.text_box.get())*int(self.text_box2.get()) ):
             rng_exp_frame2=tkinter.Frame(self.hzSlctframe, width=300, height = 350)
             self.hzlist2.append(rng_exp_frame2)
-        for j in range(int(self.text_box.get())):
-            self.label_input(self.hzSlctframe,self.label6,"- " + chr(j+65) + " section - ","top")
-            rng_box2 = self.text_input2(self.hzlist2[j], self.hzlist2[j], self.label6," 범위 : ",10,"left","left")
-            exp_box = self.text_input2(self.hzlist2[j], self.hzlist2[j], self.label6,"   확대 비율 : ",10,"left","left")
-            self.label_input(self.hzlist2[j],self.label6," ","left")
-            self.hzlist3.append(exp_box)
-            self.hzlist2[j].pack(side="top",fill = 'x')
-            self.hzlist1.append(rng_box2)
+        for j in range( int(self.text_box.get())):
+            for k in range(int(self.text_box2.get())):
+                print(self.chlistcount)
+                self.label_input(self.hzSlctframe,self.label6,"- " + chr(self.chrcount+65) + " section - ","top")
+                rng_box2 = self.text_input2(self.hzlist2[self.chlistcount], self.hzlist2[self.chlistcount], self.label6," 범위 : ",10,"left","left")
+                exp_box = self.text_input2(self.hzlist2[self.chlistcount], self.hzlist2[self.chlistcount], self.label6,"   확대 비율 : ",10,"left","left")
+                self.label_input(self.hzlist2[self.chlistcount],self.label6," ","left")
+                self.hzlist3.append(exp_box)
+                self.hzlist2[self.chlistcount].pack(side="top",fill = 'x')
+                self.hzlist1.append(rng_box2)
+                self.chlistcount += 1
+            self.chrcount+=1
             
         self.label_input(self.hzSlctframe,self.label7,"● 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
         self.label_input(self.hzSlctframe,self.label7,"● 0~" + str(self.work.lngthData//2) +" 사이로 입력해주세요.","top")
