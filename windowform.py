@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk
 from tkinter import filedialog
+from ttkwidgets.frames import ScrolledFrame
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
 from matplotlib.figure import Figure
 from back import backend
@@ -92,11 +93,14 @@ class windowform1():
         self.buttonframe3=tkinter.Frame(self.topframe, width=300, height = 100)
         #에러 그래프 프레임
         self.errorgrframe = tkinter.Frame(self.topframe, width=300, height = 100)
+        #frame4 스크롤 프레임
+        self.scrollframe =  ScrolledFrame(self.frame4, compound=tk.RIGHT)
         #빈 프레임
-        self.empty_frame=tkinter.Frame(self.frame4, width=300, height = 100)
-        self.empty_frame2=tkinter.Frame(self.frame4, width=300, height = 100)
-        self.empty_frame3=tkinter.Frame(self.frame4, width=300, height = 100)
-        self.hzrempty_frame = tkinter.Frame(self.frame4, width=300, height = 100)
+        self.empty_frame=tkinter.Frame(self.scrollframe.interior, width=300, height = 100)
+        self.empty_frame2=tkinter.Frame(self.scrollframe.interior, width=300, height = 100)
+        self.empty_frame3=tkinter.Frame(self.scrollframe.interior, width=300, height = 100)
+        self.hzrempty_frame = tkinter.Frame(self.scrollframe.interior, width=300, height = 100)
+        #text바
         self.text = tk.StringVar(self.frame1)
         self.text.set("file = 파일을 열어주세요.")
         self.text_label_input(self.frame1,self.label1,self.text)
@@ -235,15 +239,18 @@ class windowform1():
         self.widget_clear(self.frame6)
         self.frame2.pack(side="left", anchor = "nw",fill='both')
         self.fileMenu2.entryconfig(2,state = "disable")
-        self.frame4=tkinter.Frame(self.frame2, width=300, height = 350)
+        self.frame4=tkinter.Frame(self.frame2, width=300, height = 150)
         self.frame4.pack(side="top",expand = True)
-        self.frame5=tkinter.Frame(self.frame4, width=300, height = 150)
+        self.scrollframe =  ScrolledFrame(self.frame4, compound=tk.RIGHT, canvasheight=700)
+        self.scrollframe.pack(fill='both', expand=True)
+
+        self.frame5=tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
         self.frame5.pack(side="top",fill = 'x')
         self.text_box = self.text_input(self.frame5,self.label3,"  < 시계열 범위 갯수 입력 (1이상 정수만 입력) >  ",10,"top","top")
         self.buttonframe=tkinter.Frame(self.frame5, width=300, height = 350)
         self.buttonframe.pack(side="bottom")        
         self.button_input(self.buttonframe,"입   력",self.number_range,10,"left")
-
+       
     def number_range(self):
         self.widget_clear(self.sampleframe)
         self.widget_clear(self.buttonframe2)
@@ -259,9 +266,9 @@ class windowform1():
         a = self.text_box.get()
         if self.text_box.get() != '' and self.count == 0 and int(self.text_box.get()) > 0:
             self.list1,self.list2,self.list3 = [], [], []
-            self.empty_frame = tkinter.Frame(self.frame4, width=300, height = 20)
+            self.empty_frame = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
             self.empty_frame.pack(side="top",fill = 'x')
-            self.frame6=tkinter.Frame(self.frame4, width=300, height = 350, relief="solid", bd=1)
+            self.frame6=tkinter.Frame(self.scrollframe.interior, width=300, height = 350, relief="solid", bd=1)
             self.frame6.pack(side="top",fill = 'x')
             self.label_input(self.frame6,self.label6," < 시계열 범위 입력 > ","top")
             for i in range(int(self.text_box.get())):
@@ -305,9 +312,9 @@ class windowform1():
         self.widget_clear(self.empty_frame3)
         self.widget_clear(self.sampleframe)
         
-        self.hzrempty_frame = tkinter.Frame(self.frame4, width=300, height = 20)
+        self.hzrempty_frame = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
         self.hzrempty_frame.pack(side="top",fill = 'x')
-        self.hzrangeSlctframe=tkinter.Frame(self.frame4, width=300, height = 150)
+        self.hzrangeSlctframe=tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
         self.hzrangeSlctframe.pack(side="top",fill = 'x')
         self.text_box2 = self.text_input(self.hzrangeSlctframe,self.label3,"  < 주파수 범위 갯수 입력 (1이상 정수만 입력) >  ",10,"top","top")
         self.hzrbuttonframe=tkinter.Frame(self.hzrangeSlctframe, width=300, height = 350)
@@ -326,9 +333,9 @@ class windowform1():
         self.chrcount = 0;self.chlistcount = 0
         
         self.hzlist1,self.hzlist2,self.hzlist3 = [], [], []
-        self.empty_frame2 = tkinter.Frame(self.frame4, width=300, height = 20)
+        self.empty_frame2 = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
         self.empty_frame2.pack(side="top",fill = 'x')
-        self.hzSlctframe=tkinter.Frame(self.frame4, width=300, height = 350, relief="solid", bd=1)
+        self.hzSlctframe=tkinter.Frame(self.scrollframe.interior, width=300, height = 350, relief="solid", bd=1)
         self.hzSlctframe.pack(side="top",fill = 'x')
         self.label_input(self.hzSlctframe,self.label6," < 주파수 범위 입력 > ","top")        
         for i in range( int(self.text_box.get())*int(self.text_box2.get()) ):
@@ -374,9 +381,9 @@ class windowform1():
         self.work.slctFft(start_end_list2,exp_list2)
         
         self.fileMenu2.entryconfig(2,state = "normal")
-        self.empty_frame3 = tkinter.Frame(self.frame4, width=300, height = 20)
+        self.empty_frame3 = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
         self.empty_frame3.pack(side="top",fill = 'x')        
-        self.sampleframe = tkinter.Frame(self.frame4, width=300, height = 150, relief="solid", bd=1)
+        self.sampleframe = tkinter.Frame(self.scrollframe.interior, width=300, height = 150, relief="solid", bd=1)
         self.sampleframe.pack(side = "top",fill = 'x')
         self.sample_box2 = self.text_input(self.sampleframe, self.sample_label, " < 샘플 갯수 입력 > ",10,"top","top")
         self.button_input(self.sampleframe,"입   력",self.sample_choice,10,"bottom")        
