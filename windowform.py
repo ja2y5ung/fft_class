@@ -74,6 +74,9 @@ class windowform1():
         #dc 상태 프레임
         self.dcframe=tkinter.Frame(self.frame7, width=300, height = 100)
         self.dcframe.pack(side="left")
+        #dc 상태 프레임
+        self.inpdcframe=tkinter.Frame(self.frame7, width=300, height = 100)
+        self.inpdcframe.pack(side="left")        
         #sampling rate 상태 프레임
         self.srframe=tkinter.Frame(self.frame7, width=300, height = 100)
         self.srframe.pack(side="left")
@@ -115,14 +118,18 @@ class windowform1():
         self.combobox(self.frame1)
         
         self.label_input(self.dcframe,self.label5,"< DC value >","top")
+        self.label_input(self.inpdcframe,self.label5,"< Input DC value >","top")
         self.label_input(self.srframe,self.label5,"< sampling rate >","top")
         self.label_input(self.errframe,self.label5,"< error >","top")
         self.label_input(self.spframe,self.label5,"< number of sample >","top")
         self.label_input(self.freframe,self.label5,"< frequancy resolution >","top")
         
         
+        
         self.dc = tk.StringVar(self.frame1)
         self.dc.set("0")
+        self.ipdc = tk.StringVar(self.frame1)
+        self.ipdc.set("0")
         self.sr = tk.StringVar(self.frame1)
         self.sr.set("0")
         self.er = tk.StringVar(self.frame1)
@@ -133,6 +140,7 @@ class windowform1():
         self.fr.set("0")
         
         self.text_label_input(self.dcframe,self.label2,str(self.dc))
+        self.text_label_input(self.inpdcframe,self.label2,str(self.ipdc))
         self.text_label_input(self.srframe,self.label2,str(self.sr))
         self.text_label_input(self.errframe,self.label2,str(self.er))
         self.text_label_input(self.spframe,self.label2,str(self.sp))
@@ -182,6 +190,7 @@ class windowform1():
         self.canvasframe.pack(expand=True)
         self.draw_figure(self.canvas, self.work.fig1, self.canvasframe)
         self.dc.set(self.work.dcData)
+        self.ipdc.set(self.work.dcData)
         self.sr.set(self.work.Fs)
         self.sp.set(self.work.lngthData)
         self.fr.set(self.work.frqRez)
