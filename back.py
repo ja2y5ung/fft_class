@@ -178,10 +178,12 @@ class backend:
 
 
     # 구간 합성하기 
-    def genSgnl(self, _cntSmpl = 2500, _show = True):
+    def genSgnl(self, _cntSmpl = 2500, _dc = 0, _show = True):
         self.fig3   = plt.figure("합성 결과")
         plt.cla()
         cnt         = len( self.intrvlData )
+
+        self.
 
         Y           = 0
         eY          = 0
@@ -206,8 +208,8 @@ class backend:
                 Y   = Y + A*sin( 2*pi*j*f*t  + q )
                 eY  = eY + A*sin( 2*pi*j*f*et  + q )
 
-        self.Y = Y + self.dcData
-        self.eY = eY + self.dcData
+        self.Y = Y + _dc
+        self.eY = eY + _dc
         p       = self.fig3.add_subplot(1,1,1)
         p.plot(self.Y,)
         p.set_xlabel("Number of samples")
@@ -217,7 +219,7 @@ class backend:
 
         eY = eY.reshape(( self.lngthData,1))
 
-        e = ((self.orgnlData + self.dcData) - (eY +self.dcData) )**2
+        e = ((self.orgnlData + _dc) - (eY + _dc) )**2
         e = np.sqrt( e.mean() )
 
         self.error = e
@@ -232,13 +234,13 @@ class backend:
 
 
     # 에러 그래프 출력
-    def showErorr(self):
+    def showErorr(self, _dc = 0):
         self.fig5 = plt.figure(" 신호 오차 " )
         plt.cla()
 
         p = self.fig5.add_subplot(1,1,1)
         t = np.linspace(0, self.lngthData, self.lngthData, endpoint = False )
-        p.plot(t, self.orgnlData + self.dcData)
+        p.plot(t, self.orgnlData + _dc)
         p.plot(t, self.eY, 'r')
         p.set_title("Error")
         p.set_xlabel("Number of samples")
