@@ -4,6 +4,8 @@
 # 2021 05 05 11:16 어린이날, 14:52 교수님 피드벡 -> 진폭에서 슬라이스, 피규어에 제목, 20:43 -> 집에와서 수정하려고 함
 # 2021 05 06 01:30 새벽 그래프 겹치게 그려서 좀 변화한게 잘 보이도록 수정함, 해야할 것 : 오류 계산과 원그래프와 비교 그래프
 # 2021 05 06 14:14 slctItrvl 메서드에서 리스트 범위를 넘는 문제 해
+# 2021 05 06 21:06 pc에 복사
+# 2021 05 10 20:40 교수님 피드벡 -> 입력 dc값 추가
 import numpy as np
 from numpy import exp, pi, sin
 from matplotlib import pyplot as plt
@@ -49,7 +51,10 @@ class backend:
     fig5                  = 0   # 에러 그래프
 
     Y                     = 0   # 최종결과
-    eY                    = 0   #에러 비교 
+    eY                    = 0   #에러 비교
+
+
+    inptDc                = 0
     
 
 
@@ -178,10 +183,14 @@ class backend:
 
 
     # 구간 합성하기 
-    def genSgnl(self, _cntSmpl = 2500, _show = True):
+    def genSgnl(self, _cntSmpl = 2500, _dc = 0, _show = True):
         self.fig3   = plt.figure("합성 결과")
         plt.cla()
         cnt         = len( self.intrvlData )
+
+        self.inptDc = _dc
+
+        
 
         Y           = 0
         eY          = 0
@@ -206,8 +215,8 @@ class backend:
                 Y   = Y + A*sin( 2*pi*j*f*t  + q )
                 eY  = eY + A*sin( 2*pi*j*f*et  + q )
 
-        self.Y = Y + self.dcData
-        self.eY = eY + self.dcData
+        self.Y = Y + _dc
+        self.eY = eY + _dc
         p       = self.fig3.add_subplot(1,1,1)
         p.plot(self.Y,)
         p.set_xlabel("Number of samples")
@@ -217,7 +226,7 @@ class backend:
 
         eY = eY.reshape(( self.lngthData,1))
 
-        e = ((self.orgnlData + self.dcData) - (eY +self.dcData) )**2
+        e = ((self.orgnlData + _dc) - (eY +_dc) )**2
         e = np.sqrt( e.mean() )
 
         self.error = e
@@ -232,13 +241,13 @@ class backend:
 
 
     # 에러 그래프 출력
-    def showErorr(self):
+    def showErorr(self,):
         self.fig5 = plt.figure(" 신호 오차 " )
         plt.cla()
-
+        _dc     = self.inptDc
         p = self.fig5.add_subplot(1,1,1)
         t = np.linspace(0, self.lngthData, self.lngthData, endpoint = False )
-        p.plot(t, self.orgnlData + self.dcData)
+        p.plot(t, self.orgnlData + _dc)
         p.plot(t, self.eY, 'r')
         p.set_title("Error")
         p.set_xlabel("Number of samples")
