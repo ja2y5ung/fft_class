@@ -551,7 +551,7 @@ class fuckMe:
 
     def saveFile(self, _path = 'saveFile.txt'):
         if self.Y.sum() != 0:
-            np.savetxt(_path, self.Y, fmt = '%1.5f     ')
+            np.savetxt(_path, self.Y, fmt = '%1.5f\n')
         else:
             return -1
          
