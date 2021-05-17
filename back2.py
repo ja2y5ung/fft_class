@@ -1,5 +1,5 @@
 # 최선을 다해서 수정함.. 메모리 사용률에 따른 다이나믹한 연산을 하고 싶었지만.. 못했다
-# 파일 저장 기능을 추가 해야#...
+# 파일 저장 기능을 추가 해야
 import numpy as np
 from numpy.fft import fft
 from numpy import zeros, array, pi, sin
@@ -447,7 +447,7 @@ class fuckMe:
 
         cnt = len(_intrvl) // 2
 
-        if cnt != 0:
+        if cnt != 1:
             srt             = _intrvl[1]
             end             = _intrvl[2]
             if end-srt == 0 or srt > end:
@@ -455,16 +455,15 @@ class fuckMe:
             tmp             = np.linspace(_inptDC[0], _inptDC[1], end-srt, endpoint = False)
             res[srt:end]    = tmp
             res[end:]       = tmp[-1]
+            #Result
+            self.Y = res + self.tmpY.reshape(len(t))
+            self.draw(5,[t], [self.Y])
 
         else:
-            self.Y = sefl.tmpY + _inptDC[0]
-            
-
-         
-
-        #Result
-        self.Y = res + self.tmpY.reshape(len(t))
-        self.draw(5,[t], [self.Y])
+            self.Y = self.tmpY + _inptDC[0]
+            #Result
+            self.Y = res + self.tmpY.reshape(len(t))
+            self.draw(5,[t], [self.Y])
 
 
 
