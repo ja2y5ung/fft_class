@@ -5,11 +5,11 @@ from numpy.fft import fft
 from numpy import zeros, array, pi, sin
 from matplotlib import pyplot as plt
 import warnings
-import psutil
-from sys import getsizeof
+#import psutil
+#from sys import getsizeof
 
 warnings.filterwarnings(action='ignore')
-PSU = psutil.Process()
+#PSU = psutil.Process()
 
 
 Frequency   = 0.2
@@ -47,23 +47,26 @@ class fuckMe:
 
 
     
-    def loadFile(self, _path = 'fucking_data.txt'):
+    def loadFile(self, _path = 'Normal_test.csv'):
         print('데이터 불러오는 중..')
-        self.oFile = np.loadtxt(_path)#
+        #self.oFile = np.loadtxt(_path)#
+        self.oFile   = np.genfromtxt( _path, delimiter = ',', dtype = float, encoding = 'UTF-8')
+        self.row_name = np.genfromtxt( _path, delimiter = ',', dtype = str)[0]
         print('데이터 불러오기 완료')
 
 
         
-    def slctData(self, _num = [1,2]):
+    def slctData(self, _num = [1]):
         lngthData   = len(self.oFile)
         cntData     = len(_num)
         
-        res1    = zeros((cntData, lngthData))
+        res1    = zeros((cntData, lngthData-1))
         res2    = zeros(cntData)
         
         for i in range(cntData):
             idx     = _num[i]
-            res1[i] = self.oFile[:,idx] - res2[i]
+            breakpoint()
+            res1[i] = self.oFile[1:,idx] - res2[i]
             res2[i] = self.oFile[:,idx].mean()
 
         
