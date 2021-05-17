@@ -4,7 +4,7 @@ from tkinter import filedialog
 from ttkwidgets.frames import ScrolledFrame
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
 from matplotlib.figure import Figure
-from back import backend
+from back_2 import fuckMe
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -28,7 +28,7 @@ class windowform1():
     button = 0
 
     def __init__(self):
-        self.work = backend()
+        self.work = fuckMe()
         
         self.window = tk.Tk()
         self.window.title('control')
@@ -83,6 +83,9 @@ class windowform1():
         #error 상태 프레임
         self.errframe=tkinter.Frame(self.frame7, width=300, height = 100)
         self.errframe.pack(side="left")
+        #sample 갯수 프레임
+        self.spframe=tkinter.Frame(self.frame7, width=300, height = 100)
+        self.spframe.pack(side="left")
         #frequancy 프레임
         self.freframe=tkinter.Frame(self.frame7, width=300, height = 100)
         self.freframe.pack(side="left")        
@@ -118,7 +121,8 @@ class windowform1():
         self.label_input(self.inpdcframe,self.label5,"< Input DC value >","top")
         self.label_input(self.srframe,self.label5,"< sampling rate >","top")
         self.label_input(self.errframe,self.label5,"< error >","top")
-        self.label_input(self.freframe,self.label5,"< One point of Hz >","top")
+        self.label_input(self.spframe,self.label5,"< number of sample >","top")
+        self.label_input(self.freframe,self.label5,"< frequancy resolution >","top")
         
         
         
@@ -130,6 +134,8 @@ class windowform1():
         self.sr.set("0")
         self.er = tk.StringVar(self.frame1)
         self.er.set("None")
+        self.sp = tk.StringVar(self.frame1)
+        self.sp.set("0")
         self.fr = tk.StringVar(self.frame1)
         self.fr.set("0")
         
@@ -137,6 +143,7 @@ class windowform1():
         self.text_label_input(self.inpdcframe,self.label2,str(self.ipdc))
         self.text_label_input(self.srframe,self.label2,str(self.sr))
         self.text_label_input(self.errframe,self.label2,str(self.er))
+        self.text_label_input(self.spframe,self.label2,str(self.sp))
         self.text_label_input(self.freframe,self.label2, str(self.fr))
         
         
@@ -174,18 +181,19 @@ class windowform1():
 
     def callbackFunc(self,event):
         self.num = int(self.combobox.get().split(' ')[0])
-        self.work.slctData(self.num)
+        self.work.slctData([self.num])
         self.work.initData()
-        self.work.getOrgn()
+        self.work.showData()
         self.widget_clear(self.canvasframe)
         self.widget_clear(self.frame2)
         self.canvasframe=tkinter.Frame(self.frame3,  height = 50)
         self.canvasframe.pack(expand=True)
         self.draw_figure(self.canvas, self.work.fig1, self.canvasframe)
-        self.dc.set(self.work.dcData)
-        self.ipdc.set(self.work.inptDc)
+        self.dc.set(self.work.mean)
+        self.ipdc.set(self.work.inptDC)
         self.sr.set(self.work.Fs)
-        self.fr.set(self.work.frqRez)
+        self.sp.set(self.work.lngth)
+        self.fr.set(self.work.Fr)
         self.fileMenu2.entryconfig(0,state = "normal")
         self.widget_clear(self.frame4)
         self.widget_clear(self.frame5)
@@ -285,7 +293,7 @@ class windowform1():
                 self.list3.append(exp_box)
                 
             self.label_input(self.frame6,self.label7,"● 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
-            self.label_input(self.frame6,self.label7,"● 0~" + str(self.work.lngthData) +" 사이로 입력해주세요.","top")
+            self.label_input(self.frame6,self.label7,"● 0~" + str(self.work.lngth) +" 사이로 입력해주세요.","top")
             self.widget_clear(self.buttonframe)
             self.buttonframe2=tkinter.Frame(self.frame6, width=300, height = 350)
             self.buttonframe2.pack(side="bottom")  
@@ -304,8 +312,13 @@ class windowform1():
             a = list(map(int, textbox.get().split(',')))
             for i in a:
                 start_end_list.append(i)
+                
 
-        self.work.getIntrvl(start_end_list)
+        for ex_textbox in self.list3:
+            exp_list.append(float(ex_textbox.get()))
+
+        print(exp_list)
+        self.work.slctIntrvl(start_end_list,exp_list)
         
         self.fileMenu2.entryconfig(2,state = "normal")
         self.widget_clear(self.empty_frame2)
@@ -388,19 +401,16 @@ class windowform1():
         self.empty_frame3.pack(side="top",fill = 'x')        
         self.sampleframe = tkinter.Frame(self.scrollframe.interior, width=300, height = 150, relief="solid", bd=1)
         self.sampleframe.pack(side = "top",fill = 'x')
-        self.sample_box2 = self.text_input(self.sampleframe, self.sample_label, " < 샘플 갯수 입력 > ",10,"top","top")      
-        self.sample_box3 = self.text_input(self.sampleframe, self.sample_label, " < input DC 입력 > ",10,"top","top")
+        self.sample_box2 = self.text_input(self.sampleframe, self.sample_label, " < 샘플 갯수 입력 > ",10,"top","top")
         self.button_input(self.sampleframe,"입   력",self.sample_choice,10,"bottom")        
-        
+    
     def sample_choice(self):
         self.widget_clear(self.errorgrframe)
          
         self.errorgrframe = tkinter.Frame(self.sampleframe, width=300, height = 20)
         self.errorgrframe.pack(side = "top",fill = 'x')
-        self.work.genSgnl(int(self.sample_box2.get()),float(self.sample_box3.get()))
+        self.work.genSgnl(int(self.sample_box2.get()))
         self.er.set(self.work.error)
-        self.ipdc.set(self.work.inptDc)
-     
         self.fileMenu.entryconfig(1,state = "normal")
         self.button_input(self.errorgrframe,"에러 그래프",self.error_graph,10,"left")
         
