@@ -52,6 +52,14 @@ class fuckMe:
         #self.oFile = np.loadtxt(_path)#
         self.oFile   = np.genfromtxt( _path, delimiter = ',', dtype = float, encoding = 'UTF-8')
         self.row_name = np.genfromtxt( _path, delimiter = ',', dtype = str)[0]
+
+        size        = len( self.file.shape )
+
+        
+        if( size == 1 ):
+            self.columnDataLength = 1           
+        else:
+            self.columnDataLength = self.file.shape[1]
         print('데이터 불러오기 완료')
 
 
@@ -65,7 +73,6 @@ class fuckMe:
         
         for i in range(cntData):
             idx     = _num[i]
-            breakpoint()
             res1[i] = self.oFile[1:,idx] - res2[i]
             res2[i] = self.oFile[:,idx].mean()
 
