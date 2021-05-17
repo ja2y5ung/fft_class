@@ -315,14 +315,14 @@ class fuckMe:
             tmpCut   .append(cut)
             tmpData  .append(self.intrvlData[i])
             tmpData  .append(tmpAmp)
-            tmpMaxFft.append(num//2)
+            tmpMax.append(num//2)
 
 
             
         # result
         self.ampLst = resAmp#시계열 선택된 각 구간의 amp들
         self.phsLst = resPhs#시계열 선택된 각 구간의 phs들
-        self.maxIntrvl = tmpMaxFft
+        self.maxIntrvl = tmpMax
 
         self.draw(3, tmpCut, tmpData)
 
@@ -442,24 +442,28 @@ class fuckMe:
 
 
     def slctGenIntrvl(self, _intrvl = [0,200,1000,2500], _inptDC = [0,2] ):
-        fig         = plt.figure('test')
-        p           = fig.add_subplot(1,1,1)
-
         res = np.zeros(self.cntGenSmpl)
-        
-        t           = np.linspace(0,self.cntGenSmpl, self.cntGenSmpl)
-        
-        srt             = _intrvl[1]
-        end             = _intrvl[2]
-        if end-srt == 0 or srt > end:
-            return -1
-        tmp             = np.linspace(_inptDC[0], _inptDC[1], end-srt, endpoint = False)
-        res[srt:end]    = tmp
-        res[end:]       = tmp[-1]
+        t               = np.linspace(0,self.cntGenSmpl, self.cntGenSmpl)
+
+        cnt = len(_intrvl) // 2
+
+        if cnt != 0:
+            srt             = _intrvl[1]
+            end             = _intrvl[2]
+            if end-srt == 0 or srt > end:
+                return -1
+            tmp             = np.linspace(_inptDC[0], _inptDC[1], end-srt, endpoint = False)
+            res[srt:end]    = tmp
+            res[end:]       = tmp[-1]
+
+        else:
+            self.Y = sefl.tmpY + _inptDC[0]
+            
+
+         
 
         #Result
         self.Y = res + self.tmpY.reshape(len(t))
-        
         self.draw(5,[t], [self.Y])
 
 
@@ -547,7 +551,12 @@ class fuckMe:
 
         print('에러 계산 완료')
 
-        
+
+    def saveFile(self, _path = 'saveFile.txt'):
+        if self.Y != 0:
+            np.savetxt(_path, self.Y, fmt = '%1.5f     ')
+        else:
+            return -1
          
 
 
@@ -576,7 +585,7 @@ if __name__ == '__main__':
 
     fuck.slctIntrvl([100,200,400,600],[1,1])
     fuck.slctFft([0,30,0,30], [1,1])
-    #fuck.genSgnl(2500,fuck.mean)
-    #fuck.slctGenIntrvl()
+    fuck.genSgnl(2500,fuck.mean)
+    fuck.slctGenIntrvl()
     
     #fuck.getError()
