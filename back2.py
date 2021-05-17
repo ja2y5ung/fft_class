@@ -446,8 +446,7 @@ class fuckMe:
         t               = np.linspace(0,self.cntGenSmpl, self.cntGenSmpl)
 
         cnt = len(_intrvl) // 2
-
-        if cnt != 1:
+        if cnt != 0:
             srt             = _intrvl[1]
             end             = _intrvl[2]
             if end-srt == 0 or srt > end:
@@ -462,7 +461,6 @@ class fuckMe:
         else:
             self.Y = self.tmpY + _inptDC[0]
             #Result
-            self.Y = res + self.tmpY.reshape(len(t))
             self.draw(5,[t], [self.Y])
 
 
@@ -552,7 +550,7 @@ class fuckMe:
 
 
     def saveFile(self, _path = 'saveFile.txt'):
-        if self.Y != 0:
+        if self.Y.sum() != 0:
             np.savetxt(_path, self.Y, fmt = '%1.5f     ')
         else:
             return -1
@@ -585,6 +583,6 @@ if __name__ == '__main__':
     fuck.slctIntrvl([100,200,400,600],[1,1])
     fuck.slctFft([0,30,0,30], [1,1])
     fuck.genSgnl(2500,fuck.mean)
-    fuck.slctGenIntrvl()
+    fuck.slctGenIntrvl([0],[1])
     
     #fuck.getError()
