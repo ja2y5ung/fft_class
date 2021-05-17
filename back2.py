@@ -42,6 +42,7 @@ class fuckMe:
     e           = 0
     inptDC      = 0
     cntGenSmpl  = 0
+    maxIntrvl   = 0
 
     
 
@@ -321,6 +322,7 @@ class fuckMe:
         # result
         self.ampLst = resAmp#시계열 선택된 각 구간의 amp들
         self.phsLst = resPhs#시계열 선택된 각 구간의 phs들
+        self.maxIntrvl = tmpMaxFft
 
         self.draw(3, tmpCut, tmpData)
 
