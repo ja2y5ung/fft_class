@@ -226,7 +226,7 @@ class backend:
 
         eY = eY.reshape(( self.lngthData,1))
 
-        e = ((self.orgnlData + _dc) - (eY +_dc) )**2
+        e = ((self.orgnlData + self.dcData) - (eY +_dc) )**2
         e = np.sqrt( e.mean() )
 
         self.error = e
@@ -247,7 +247,7 @@ class backend:
         _dc     = self.inptDc
         p = self.fig5.add_subplot(1,1,1)
         t = np.linspace(0, self.lngthData, self.lngthData, endpoint = False )
-        p.plot(t, self.orgnlData + _dc)
+        p.plot(t, self.orgnlData + self.dcData)
         p.plot(t, self.eY, 'r')
         p.set_title("Error")
         p.set_xlabel("Number of samples")
