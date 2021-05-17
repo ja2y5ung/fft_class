@@ -1,6 +1,5 @@
 # 최선을 다해서 수정함.. 메모리 사용률에 따른 다이나믹한 연산을 하고 싶었지만.. 못했다
 # 파일 저장 기능을 추가 해야
-# ...
 import numpy as np
 from numpy.fft import fft
 from numpy import zeros, array, pi, sin
@@ -43,6 +42,7 @@ class fuckMe:
     e           = 0
     inptDC      = 0
     cntGenSmpl  = 0
+    maxIntrvl   = 0
 
     
 
@@ -282,7 +282,7 @@ class fuckMe:
         self.intrvl = _intrvl#시계열 선택된 범위
         self.intrvlData = array(tmpData[1:])#선택된 범위 안에 있는 데이터
         self.draw(2, tmpT, tmpData)
-        
+
         # 다음 실행될 메서드
         self.clcFft()
 
@@ -294,6 +294,7 @@ class fuckMe:
         resPhs      = []
         tmpCut      = []
         tmpData     = []
+        tmpMax      = []
         
         # 시계열에서 선택된 구간 갯수 
         for i in range(cntIntrvl):
@@ -311,14 +312,17 @@ class fuckMe:
             num     = end - srt
             cut     = np.linspace(srt, end, num, endpoint = False)
 
-            tmpCut  .append(cut)
-            tmpData .append(self.intrvlData[i])
-            tmpData .append(tmpAmp)
+            tmpCut   .append(cut)
+            tmpData  .append(self.intrvlData[i])
+            tmpData  .append(tmpAmp)
+            tmpMaxFft.append(num//2)
+
 
             
         # result
         self.ampLst = resAmp#시계열 선택된 각 구간의 amp들
         self.phsLst = resPhs#시계열 선택된 각 구간의 phs들
+        self.maxIntrvl = tmpMaxFft
 
         self.draw(3, tmpCut, tmpData)
 
@@ -570,9 +574,9 @@ if __name__ == '__main__':
     #fuck.slctFft([0,14400//2], [1])
     #fuck.genSgnl(14400)
 
-    fuck.slctIntrvl([0,2500])
-    fuck.slctFft([0,2500//2], [1])
-    fuck.genSgnl(2500,fuck.mean)
+    fuck.slctIntrvl([100,200,400,600],[1,1])
+    fuck.slctFft([0,30,0,30], [1,1])
+    #fuck.genSgnl(2500,fuck.mean)
     #fuck.slctGenIntrvl()
     
     #fuck.getError()
