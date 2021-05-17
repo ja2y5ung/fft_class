@@ -1,5 +1,5 @@
 # 최선을 다해서 수정함.. 메모리 사용률에 따른 다이나믹한 연산을 하고 싶었지만.. 못했다
-# 파일 저장 기능을 추가 해야
+# 파일 저장 기능을 추가 해야#...
 import numpy as np
 from numpy.fft import fft
 from numpy import zeros, array, pi, sin
