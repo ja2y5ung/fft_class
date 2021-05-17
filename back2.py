@@ -38,7 +38,12 @@ class fuckMe:
     phsLst      = []
 
     Y           = 0
+    tmpY        = 0
     e           = 0
+    inptDC      = 0
+    cntGenSmpl  = 0
+
+    
 
 
     
@@ -52,6 +57,13 @@ class fuckMe:
         #self.oFile = np.loadtxt(_path)#
         self.oFile   = np.genfromtxt( _path, delimiter = ',', dtype = float, encoding = 'UTF-8')
         self.row_name = np.genfromtxt( _path, delimiter = ',', dtype = str)[0]
+        size        = len( self.oFile.shape )
+
+        
+        if( size == 1 ):
+            self.columnDataLength = 1           
+        else:
+            self.columnDataLength = self.oFile.shape[1]
         print('데이터 불러오기 완료')
 
 
@@ -65,7 +77,6 @@ class fuckMe:
         
         for i in range(cntData):
             idx     = _num[i]
-            breakpoint()
             res1[i] = self.oFile[1:,idx] - res2[i]
             res2[i] = self.oFile[:,idx].mean()
 
@@ -88,7 +99,7 @@ class fuckMe:
                 p   .set_ylabel('x(N)')
                 p   .set_title('Original')
                 p   .plot(_x[i], _y[i])
-                plt .legend(['Original - dc'])
+                plt .legend(['Original'])
                 plt .grid(True)
                 self.fig1.show()
 
@@ -167,15 +178,16 @@ class fuckMe:
 
         elif _fig == 5:
             cnt = len(_y)
-            self.fig4 = plt.figure('생성한 신호', figsize =(10,4))
-            
+            self.fig4   = plt.figure('생성한 신호', figsize =(10,4))
+            self.fig4   .set_size_inches(10,4)
+            plt.cla()
             for i in range(cnt):
                 p = self.fig4.add_subplot(1,1,1)
                 p.set_title('Generated signal')
                 p.set_xlabel('Number of samples')
-                p.set_ylabel('x(N)')
+                p.set_ylabel('x(N)')                
+                p.plot(_x[i], _y[i].reshape(len(_x[i])))
                 plt.legend(['Generated + input dc'])
-                p.plot(_x[i], _y[i])
                 plt.grid(True)
                 
             self.fig4.tight_layout()
@@ -197,6 +209,7 @@ class fuckMe:
                 plt.grid(True)
             self.fig5.tight_layout()
             self.fig5.show()
+
 
 
             
@@ -245,10 +258,9 @@ class fuckMe:
     def slctIntrvl(self, _intrvl = [41234, 75643], _scale = [1]):   
         tmpT    = []
         tmpData = []
-
         tmpT    .append(np.linspace(0, self.lngth, self.lngth, endpoint = False))
         tmpData .append(self.data[0])
-
+        
         cntIntrvl = len(_intrvl) // 2
         
         # 시계열에서 선택된 구간 갯수
@@ -268,7 +280,6 @@ class fuckMe:
         # result
         self.intrvl = _intrvl#시계열 선택된 범위
         self.intrvlData = array(tmpData[1:])#선택된 범위 안에 있는 데이터
-        
         self.draw(2, tmpT, tmpData)
         
         # 다음 실행될 메서드
@@ -417,10 +428,36 @@ class fuckMe:
 
         #Result
         self.Y = tmp.sum(axis=0) + _inptDC#
-        
+        self._inptDC = _inptDC
+        self.cntGenSmpl = _cntGenSmpl
+        self.tmpY = np.copy(self.Y)
         self.draw(5, [t], [self.Y])
         
         print('신호 생성 완료')
+
+
+    def slctGenIntrvl(self, _intrvl = [0,200,1000,2500], _inptDC = [0,2] ):
+        fig         = plt.figure('test')
+        p           = fig.add_subplot(1,1,1)
+
+        res = np.zeros(self.cntGenSmpl)
+        
+        t           = np.linspace(0,self.cntGenSmpl, self.cntGenSmpl)
+        
+        srt             = _intrvl[1]
+        end             = _intrvl[2]
+        if end-srt == 0 or srt > end:
+            return -1
+        tmp             = np.linspace(_inptDC[0], _inptDC[1], end-srt, endpoint = False)
+        res[srt:end]    = tmp
+        res[end:]       = tmp[-1]
+
+        #Result
+        self.Y = res + self.tmpY.reshape(len(t))
+        
+        self.draw(5,[t], [self.Y])
+
+
 
 
     def getError(self):
@@ -518,7 +555,7 @@ if __name__ == '__main__':
     fuck.initData()
     fuck.showData()
 
-    #fuck.slctIntrvl([0,5000, 10000,20000],[1,1])
+    #fuck.slctIntrvl([0,1000,4000,5000],[1,1])
     #fuck.slctFft([0,100,1000,2000,0,200,1000,4000], [1,1,1,1])
     
     #fuck.slctIntrvl([0,5000,  10000,20000,  6000,7000],[1,1,1])
@@ -532,5 +569,9 @@ if __name__ == '__main__':
     #fuck.slctFft([0,14400//2], [1])
     #fuck.genSgnl(14400)
 
+    fuck.slctIntrvl([0,2500])
+    fuck.slctFft([0,2500//2], [1])
+    fuck.genSgnl(2500,fuck.mean)
+    #fuck.slctGenIntrvl()
     
     #fuck.getError()
