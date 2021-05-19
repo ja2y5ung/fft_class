@@ -583,7 +583,6 @@ class fuckMe:
             e       = (self.data[0] - eY)**2
             self.e  = np.sqrt(e.sum())
             self.draw(6,[t], [eY])
-            breakpoint()
             print('에러 계산 완료')
         else:
             tmpDC = []
