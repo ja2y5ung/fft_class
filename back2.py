@@ -42,7 +42,7 @@ class fuckMe:
     e           = 0
     inptDC      = 0
     cntGenSmpl  = 0
-    maxIntrvl   = 0
+    DCvalue     = 0
 
     
 
@@ -261,8 +261,13 @@ class fuckMe:
         tmpData = []
         tmpT    .append(np.linspace(0, self.lngth, self.lngth, endpoint = False))
         tmpData .append(self.data[0])
+        maxIntrvl = []
         
         cntIntrvl = len(_intrvl) // 2
+
+        # 입력이 완전하지 않은 경우
+        if len(_intrvl)//2 != len(_scale):
+            return -1
         
         # 시계열에서 선택된 구간 갯수
         for i in range(cntIntrvl):
@@ -276,13 +281,15 @@ class fuckMe:
             num     = end - srt
             tmpT    .append(np.linspace(srt, end, num, endpoint = False))
             tmpData .append(self.data[0][srt:end]*_scale[i])
+            maxIntrvl.append( (end - srt )//2)
 
 
         # result
         self.intrvl = _intrvl#시계열 선택된 범위
         self.intrvlData = array(tmpData[1:])#선택된 범위 안에 있는 데이터
+        self.maxIntrvl = maxIntrvl
         self.draw(2, tmpT, tmpData)
-
+        
         # 다음 실행될 메서드
         self.clcFft()
 
@@ -294,7 +301,6 @@ class fuckMe:
         resPhs      = []
         tmpCut      = []
         tmpData     = []
-        tmpMax      = []
         
         # 시계열에서 선택된 구간 갯수 
         for i in range(cntIntrvl):
@@ -312,17 +318,14 @@ class fuckMe:
             num     = end - srt
             cut     = np.linspace(srt, end, num, endpoint = False)
 
-            tmpCut   .append(cut)
-            tmpData  .append(self.intrvlData[i])
-            tmpData  .append(tmpAmp)
-            tmpMax.append(num//2)
-
+            tmpCut  .append(cut)
+            tmpData .append(self.intrvlData[i])
+            tmpData .append(tmpAmp)
 
             
         # result
         self.ampLst = resAmp#시계열 선택된 각 구간의 amp들
         self.phsLst = resPhs#시계열 선택된 각 구간의 phs들
-        self.maxIntrvl = tmpMax
 
         self.draw(3, tmpCut, tmpData)
 
@@ -361,6 +364,9 @@ class fuckMe:
         
     def genSgnl(self, _cntGenSmpl = 10000, _inptDC = 0):
         print('신호 생성중..')
+
+        if type(_cntGenSmpl) != int:
+            return -1
 
 
         cntIntrvl = len(self.intrvlData)
@@ -442,26 +448,49 @@ class fuckMe:
 
 
     def slctGenIntrvl(self, _intrvl = [0,200,1000,2500], _inptDC = [0,2] ):
-        res = np.zeros(self.cntGenSmpl)
-        t               = np.linspace(0,self.cntGenSmpl, self.cntGenSmpl)
+        fig = plt.figure('test')
+        p   = fig.add_subplot(1,1,1)
+        
+        # 입력이 완전하지 안은 경우
+        if len(_intrvl)//2 != len(_inptDC):
+            return -1
 
+        # 범위 입력이 잘못된 경우
         cnt = len(_intrvl) // 2
-        if cnt != 0:
-            srt             = _intrvl[1]
-            end             = _intrvl[2]
+        for i in range(cnt):
+            srt = _intrvl[2*i]
+            end = _intrvl[2*i+1]
             if end-srt == 0 or srt > end:
                 return -1
+
+        res = np.zeros(self.cntGenSmpl)
+        t   = np.linspace(0,self.cntGenSmpl, self.cntGenSmpl)
+
+        cntInptDC = len(_inptDC)
+
+        if cntInptDC == 1:
+            #Result
+            tmp     = np.linspace(0, len(t), len(t), endpoint = False )
+            res[:]  = tmp
+            self.Y  = self.tmpY.reshape(len(t)) + res
+            self.draw(5,[t], [self.Y])
+        elif cntInptDC != 1:
+            breakpoint()
+            srt = _intrvl[1]
+            end = _intrvl[2]
+        
             tmp             = np.linspace(_inptDC[0], _inptDC[1], end-srt, endpoint = False)
+            res[:srt]       = tmp[0]
             res[srt:end]    = tmp
             res[end:]       = tmp[-1]
+
             #Result
-            self.Y = res + self.tmpY.reshape(len(t))
+            self.DCvalue = res
+            self.Y = self.tmpY.reshape(len(t)) + res
             self.draw(5,[t], [self.Y])
 
-        else:
-            self.Y = self.tmpY + _inptDC[0]
-            #Result
-            self.draw(5,[t], [self.Y])
+        
+        
 
 
 
@@ -539,7 +568,7 @@ class fuckMe:
         
 
         #Result
-        eY      = tmp.sum(axis = 0) + self.mean[0]
+        eY      = tmp.sum(axis = 0) + self.DCvalue
         e       = (self.data[0] - eY)**2
         self.e  = np.sqrt(e.sum())
 
@@ -548,12 +577,7 @@ class fuckMe:
 
         print('에러 계산 완료')
 
-
-    def saveFile(self, _path = 'saveFile.txt'):
-        if self.Y.sum() != 0:
-            np.savetxt(_path, self.Y, fmt = '%1.5f\n')
-        else:
-            return -1
+        
          
 
 
@@ -580,9 +604,9 @@ if __name__ == '__main__':
     #fuck.slctFft([0,14400//2], [1])
     #fuck.genSgnl(14400)
 
-    fuck.slctIntrvl([100,200,400,600],[1,1])
-    fuck.slctFft([0,30,0,30], [1,1])
-    fuck.genSgnl(2500,fuck.mean)
-    fuck.slctGenIntrvl([0],[1])
+    fuck.slctIntrvl([0,2500])
+    fuck.slctFft([0,2500//2], [1])
+    fuck.genSgnl(2500)
+    fuck.slctGenIntrvl([0,300,900,2500],[244,249])
     
-    #fuck.getError()
+    fuck.getError()
