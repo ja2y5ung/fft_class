@@ -439,7 +439,6 @@ class fuckMe:
 
         #Result
         self.Y = tmp.sum(axis=0) + _inptDC#
-        self._inptDC = _inptDC
         self.cntGenSmpl = _cntGenSmpl
         self.tmpY = np.copy(self.Y)
         self.draw(5, [t], [self.Y])
@@ -475,7 +474,6 @@ class fuckMe:
             self.Y  = self.tmpY.reshape(len(t)) + res
             self.draw(5,[t], [self.Y])
         elif cntInptDC != 1:
-            breakpoint()
             srt = _intrvl[1]
             end = _intrvl[2]
         
@@ -487,6 +485,7 @@ class fuckMe:
             #Result
             self.DCvalue = res
             self.Y = self.tmpY.reshape(len(t)) + res
+            self.inptDC = _inptDC
             self.draw(5,[t], [self.Y])
 
         
@@ -568,14 +567,40 @@ class fuckMe:
         
 
         #Result
-        eY      = tmp.sum(axis = 0) + self.DCvalue
-        e       = (self.data[0] - eY)**2
-        self.e  = np.sqrt(e.sum())
+        
 
+        if len(self.DCvalue) // self.lngth == 0:
+            tmpDC = []
+            i = 0;
+            while len(tmpDC) != self.lngth:
+                
+                tmpDC = np.hstack((tmpDC,self.DCvalue[i]))
+                i = i +1
+                if( i >= len(self.Y)):
+                    i = 0
+            
+            eY      = tmp.sum(axis = 0) + tmpDC
+            e       = (self.data[0] - eY)**2
+            self.e  = np.sqrt(e.sum())
+            self.draw(6,[t], [eY])
+            breakpoint()
+            print('에러 계산 완료')
+        else:
+            tmpDC = []
+            i = 0
+            while len(tmpDC) != self.lngth:
+                tmpDC = np.hstack((tmpDC, self.DCvalue[i]))
+                i = i+1
+                if i >= self.lngth:
+                    i = 0
 
-        self.draw(6,[t], [eY])
+            
+            eY      = tmp.sum(axis = 0) + tmpDC
+            e       = (self.data[0] - eY)**2
+            self.e  = np.sqrt(e.sum())
 
-        print('에러 계산 완료')
+            self.draw(6,[t], [eY])
+            print('에러 계산 완료')
 
         
          
@@ -606,7 +631,7 @@ if __name__ == '__main__':
 
     fuck.slctIntrvl([0,2500])
     fuck.slctFft([0,2500//2], [1])
-    fuck.genSgnl(2500)
-    fuck.slctGenIntrvl([0,300,900,2500],[244,249])
+    fuck.genSgnl(3000)
+    fuck.slctGenIntrvl([0,300,900,1000],[244,280])
     
     fuck.getError()
