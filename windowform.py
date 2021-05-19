@@ -1,5 +1,7 @@
 import tkinter as tk
 import tkinter.ttk
+import tkinter.font
+from tkinter import *
 from tkinter import filedialog
 from ttkwidgets.frames import ScrolledFrame
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
@@ -16,8 +18,7 @@ class windowform1():
     window,window2,window3 = 0 ,0 ,0
     mainMenu,mainMenu2 = 0, 0
     fileMenu,fileMenu2 = 0, 0
-    canvas = FigureCanvasTkAgg(plt.figure(), master = window)
-    canvas2 = FigureCanvasTkAgg(plt.figure(), master = window2)
+##    canvas = FigureCanvasTkAgg(plt.figure(), master = window)
     label1,label2,label3,label4,label5,label6,label7,label8 = 0,0,0,0,0,0,0,0
     sample_label = 0
     buttonframe,buttonframe2 = 0,0
@@ -35,6 +36,8 @@ class windowform1():
         self.window.geometry("600x900+50+50")
         self.window.resizable(True, True)
         self.mainMenu = tk.Menu(self.window)
+
+        self.choice = IntVar()
         
         self.window.config(menu = self.mainMenu)
         self.fileMenu = tk.Menu(self.mainMenu, tearoff=0)
@@ -48,13 +51,19 @@ class windowform1():
         self.fileMenu2.add_command(label = "예측 신호 생성", command = self.range_select,state = "disable")
 ##        self.fileMenu2.add_command(label = "Test Button", command = self.test2, state = "disable")
 
+
+        #에러 상태 프레임
+        self.error_messageframe = tkinter.Frame(self.window, width=300, height = 50, relief="solid", bd=1)
+        self.error_messageframe.pack(side="top",fill="x")
         #파일
         self.topframe = tkinter.Frame(self.window, width=300, height = 100, relief="solid", bd=1)
         self.topframe.pack(side="top",fill="x")
         self.frame1=tkinter.Frame(self.topframe, width=300, height = 100)
         self.frame1.pack(side="left",anchor = "nw",fill="x")
         #기능
-        self.frame2=tkinter.Frame(self.window, width=300, height = 350,relief="solid", bd=1)
+        self.scrollframe1 = ScrolledFrame(self.window, compound=tk.RIGHT, canvasheight=700)
+        self.scrollframe1.pack(side = "left",fill='y', expand=True)
+        
         #그래프
         self.scrollframe2 = ScrolledFrame(self.window, compound=tk.RIGHT, canvasheight=700)
         self.scrollframe2.pack(side = "right",fill='y', expand=True)
@@ -114,6 +123,11 @@ class windowform1():
         self.text = tk.StringVar(self.frame1)
         self.text.set("file = 파일을 열어주세요.")
         self.text_label_input(self.frame1,self.label1,self.text)
+
+        self.error_message = tk.StringVar(self.error_messageframe)
+        self.error_message.set("Error = None")
+        self.text_label_input(self.error_messageframe,self.label1,self.error_message,15)
+
         self.window.mainloop()
         
     def open_file(self):
@@ -131,8 +145,6 @@ class windowform1():
         self.label_input(self.spframe,self.label5,"< number of sample >","top")
         self.label_input(self.freframe,self.label5,"< frequancy resolution >","top")
         
-        
-        
         self.dc = tk.StringVar(self.frame1)
         self.dc.set("0")
         self.ipdc = tk.StringVar(self.frame1)
@@ -145,15 +157,23 @@ class windowform1():
         self.sp.set("0")
         self.fr = tk.StringVar(self.frame1)
         self.fr.set("0")
+
         
         self.text_label_input(self.dcframe,self.label2,str(self.dc))
+        self.text_label_input(self.dcframe,self.label2," ")
         self.text_label_input(self.inpdcframe,self.label2,str(self.ipdc))
+        self.text_label_input(self.inpdcframe,self.label2," ")
         self.text_label_input(self.srframe,self.label2,str(self.sr))
+        self.text_label_input(self.srframe,self.label2," ")
         self.text_label_input(self.errframe,self.label2,str(self.er))
+        self.text_label_input(self.errframe,self.label2," ")
         self.text_label_input(self.spframe,self.label2,str(self.sp))
+        self.text_label_input(self.spframe,self.label2," ")
         self.text_label_input(self.freframe,self.label2, str(self.fr))
-        
-        
+        self.text_label_input(self.freframe,self.label2," ")        
+
+                
+
         self.fileMenu.entryconfig(0,state = "disable")
         
     def save_file(self):
@@ -170,8 +190,9 @@ class windowform1():
         self.window2.quit()
         self.window2.destroy()
 
-    def text_label_input(self,window,label,text):
-        label = tk.Label(window, textvariable = text)
+    def text_label_input(self,window,label,text,fsize = 10):
+        fnt = tk.font.Font(size = fsize)
+        label = tk.Label(window, textvariable = text,font = fnt)
         label.pack()
         
     def combobox(self,window):
@@ -189,7 +210,7 @@ class windowform1():
         self.work.slctData([self.num])
         self.work.initData()
         self.work.showData()
-        self.widget_clear(self.frame2)
+        self.widget_clear(self.scrollframe1)
 
         self.dc.set(self.work.mean)
         self.ipdc.set(self.work.inptDC)
@@ -202,9 +223,6 @@ class windowform1():
         self.widget_clear(self.frame6)
 ##        self.fileMenu2.entryconfig(1,state = "disable")
     
-        
-    def canvas_clear(self, canvas):
-        canvas.get_tk_widget().forget()
 
     def widget_clear(self, widget):
         widget.pack_forget()
@@ -242,15 +260,13 @@ class windowform1():
             
     def range_select(self):
         self.count = 0
-        self.widget_clear(self.frame4)
+        self.widget_clear(self.scrollframe)
         self.widget_clear(self.frame5)
         self.widget_clear(self.frame6)
-        self.frame2.pack(side="left", anchor = "nw",fill='both')
+        self.scrollframe =  ScrolledFrame(self.window, compound=tk.RIGHT, canvasheight=700)
+        self.scrollframe.pack(side = "left",fill='both', expand=True)
+
         self.fileMenu2.entryconfig(2,state = "disable")
-        self.frame4=tkinter.Frame(self.frame2, width=300, height = 150)
-        self.frame4.pack(side="top",expand = True)
-        self.scrollframe =  ScrolledFrame(self.frame4, compound=tk.RIGHT, canvasheight=700)
-        self.scrollframe.pack(fill='both', expand=True)
 
         self.frame5=tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
         self.frame5.pack(side="top",fill = 'x')
@@ -317,11 +333,9 @@ class windowform1():
             for i in a:
                 start_end_list.append(i)
                 
-
         for ex_textbox in self.list3:
             exp_list.append(float(ex_textbox.get()))
 
-        print(exp_list)
         self.work.slctIntrvl(start_end_list,exp_list)
         
         self.fileMenu2.entryconfig(2,state = "normal")
@@ -380,7 +394,7 @@ class windowform1():
             
         self.label_input(self.hzSlctframe,self.label7,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
         for i in range(len(self.work.maxIntrvl)):
-            self.label_input(self.hzSlctframe,self.label7,"○ " + chr(i+65) + " : 0~" + str(self.work.maxIntrvl[i]//2) +" 사이로 입력해주세요.","top")
+            self.label_input(self.hzSlctframe,self.label7,"○ " + chr(i+65) + " : 0~" + str(self.work.maxIntrvl[i]) +" 사이로 입력해주세요.","top")
  
         self.buttonframe3=tkinter.Frame(self.hzSlctframe, width=300, height = 350)
         self.buttonframe3.pack(side="bottom")  
@@ -416,28 +430,29 @@ class windowform1():
         self.sampleframe = tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
         self.sampleframe.pack(side = "top",fill = 'x')
         self.sample_box2 = self.text_input(self.sampleframe, self.sample_label, " ● 샘플 갯수 입력  ",10,"top","top")
-        self.inputdc_box = self.text_input(self.sampleframe, self.sample_label, " ● Input DC Value  ",10,"top","top")
         self.button_input(self.sampleframe,"입   력",self.num_range_sample,10,"bottom")        
 
     def num_range_sample(self):
+
         self.widget_clear(self.empty_frame4)
         self.widget_clear(self.nb_sample_rg_frame)
         self.widget_clear(self.empty_frame5)
         self.widget_clear(self.sample_rg_frame)
         
-        self.work.genSgnl(int(self.sample_box2.get()), int(self.inputdc_box.get()))
-        self.ipdc.set(int(self.inputdc_box.get()))
+        self.work.genSgnl(int(self.sample_box2.get()))
         self.empty_frame4 = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
         self.empty_frame4.pack(side="top",fill = 'x')       
         self.nb_sample_rg_frame = tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
         self.nb_sample_rg_frame.pack(side = "top",fill = 'x')
 
-        self.nb_sample_box = self.text_input(self.nb_sample_rg_frame,self.label8,"  ● 샘플 범위 갯수 입력 (1 or 2 입력)   ",10,"top","top")
+        self.label_input(self.nb_sample_rg_frame,self.label8," ● 샘플 범위(선택) ","top")
+        self.radio1 = tk.Radiobutton(self.nb_sample_rg_frame, text = "모든 구간", variable = self.choice, value = 1).pack(side='top')
+        self.radio2 = tk.Radiobutton(self.nb_sample_rg_frame, text = "3구간으로 분할", variable = self.choice, value = 2).pack(side='top')
+        
         self.nb_smp_rg_buttonframe=tkinter.Frame(self.nb_sample_rg_frame, width=300, height = 350)
         self.nb_smp_rg_buttonframe.pack(side="bottom")        
         self.button_input(self.nb_smp_rg_buttonframe,"입   력",self.range_sample,10,"left")        
 
-    
     def range_sample(self):
         self.widget_clear(self.empty_frame5)
         self.widget_clear(self.sample_rg_frame)
@@ -448,16 +463,12 @@ class windowform1():
         self.sample_rg_frame = tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
         self.sample_rg_frame.pack(side = "top",fill = 'x')
         self.label_input(self.sample_rg_frame, self.label8," ● 샘플 범위 입력  ","top")
-        if int(self.nb_sample_box.get()) == 1:
-            nb_smp_range = 1
-        elif int(self.nb_sample_box.get()) == 2:
-            nb_smp_range = 2
 
-        if nb_smp_range == 2:
-            for i in range(nb_smp_range):
+        if self.choice.get() == 2:
+            for i in range(int(self.choice.get())):
                 rng_sample_frame = tkinter.Frame(self.sample_rg_frame, width=300, height = 350)
                 self.rg_sample_list.append(rng_sample_frame)
-            for j in range(nb_smp_range):
+            for j in range(int(self.choice.get())):
                 self.label_input(self.sample_rg_frame,self.label8,"- " + chr(j+65) + " section - ","top")
                 rng_box3 = self.text_input2(self.rg_sample_list[j], self.rg_sample_list[j], self.label8," 범위 : ",10,"left","left")
                 dc_box = self.text_input2(self.rg_sample_list[j], self.rg_sample_list[j], self.label8,"  D C : ",10,"left","left")
@@ -471,11 +482,11 @@ class windowform1():
             self.sample_rg_buttonframe=tkinter.Frame(self.sample_rg_frame, width=300, height = 350)
             self.sample_rg_buttonframe.pack(side="bottom")  
             self.button_input(self.sample_rg_buttonframe,"입   력",self.sample_choice,10,"left")
-        elif nb_smp_range == 1:
-            for i in range(nb_smp_range):
+        elif self.choice.get() == 1:
+            for i in range(int(self.choice.get())):
                 rng_sample_frame = tkinter.Frame(self.sample_rg_frame, width=300, height = 350)
                 self.rg_sample_list.append(rng_sample_frame)
-            for j in range(nb_smp_range):
+            for j in range(int(self.choice.get())):
                 self.label_input(self.sample_rg_frame,self.label8,"- " + chr(j+65) + " section - ","top")
                 dc_box = self.text_input2(self.rg_sample_list[j], self.rg_sample_list[j], self.label8,"  D C : ",10,"left","left")
                 self.label_input(self.rg_sample_list[j],self.label8," ","left")
@@ -502,8 +513,8 @@ class windowform1():
 
         if len(start_end_list3) < 1:
             start_end_list3.append(0)
-        print(start_end_list3)
-        print(dc_list)
+
+        self.ipdc.set(dc_list)
         
         self.work.slctGenIntrvl(start_end_list3, dc_list)
         self.errorgrframe = tkinter.Frame(self.sampleframe, width=300, height = 20)
