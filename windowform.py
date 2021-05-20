@@ -491,8 +491,7 @@ class windowform1():
                 rng_sample_frame = tkinter.Frame(self.sample_rg_frame, width=300, height = 350)
                 self.rg_sample_list.append(rng_sample_frame)
             for j in range(int(self.choice.get())):
-                self.label_input(self.sample_rg_frame,self.label8,"- " + chr(j+65) + " section - ","top")
-                dc_box = self.text_input2(self.rg_sample_list[j], self.rg_sample_list[j], self.label8,"  D C : ",10,"left","left")
+                dc_box = self.text_input2(self.rg_sample_list[j], self.rg_sample_list[j], self.label8," - D C - ",10,"top","top")
                 self.label_input(self.rg_sample_list[j],self.label8," ","left")
                 self.rg_sample_list[j].pack(side="top",fill = 'x')
                 self.dc_sample_list.append(dc_box)
