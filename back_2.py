@@ -42,7 +42,7 @@ class fuckMe:
     e           = 0
     inptDC      = 0
     cntGenSmpl  = 0
-    DCvalue     = 0
+    DCvalue     = []
 
     errMsg = ''
 
@@ -491,6 +491,8 @@ class fuckMe:
             #Result
             #tmp     = np.linspace(0, len(t), len(t), endpoint = False )
             res[:]  = _inptDC
+            self.DCvalue = []
+            self.inptDC = _inptDC
             self.Y  = self.tmpY.reshape(len(t)) + res
             self.draw(5,[t], [self.Y])
         elif cntInptDC != 1:
@@ -519,6 +521,7 @@ class fuckMe:
         cntIntrvl = len(self.intrvlData)
         Y = 0
         resY = 0
+
         
         #시계열에서 선택된 갯수
         for k in range(cntIntrvl):
@@ -588,22 +591,30 @@ class fuckMe:
 
         #Result
         
-
+        breakpoint()
         if len(self.DCvalue) // self.lngth == 0:
-            tmpDC = []
-            i = 0;
-            while len(tmpDC) != self.lngth:
+
+            if len(self.DCvalue) == 0:
+                eY      = tmp.sum(axis = 0) + self.inptDC[0]
+                e       = (self.data[0] - eY)**2
+                self.e  = np.sqrt(e.sum())
+                self.draw(6,[t], [eY])
+                print('에러 계산 완료')
+            else:
+                tmpDC = []
+                i = 0;
+                while len(tmpDC) != self.lngth:
+                    
+                    tmpDC = np.hstack((tmpDC,self.DCvalue[i]))
+                    i = i +1
+                    if( i >= len(self.Y)):
+                        i = 0
                 
-                tmpDC = np.hstack((tmpDC,self.DCvalue[i]))
-                i = i +1
-                if( i >= len(self.Y)):
-                    i = 0
-            
-            eY      = tmp.sum(axis = 0) + tmpDC
-            e       = (self.data[0] - eY)**2
-            self.e  = np.sqrt(e.sum())
-            self.draw(6,[t], [eY])
-            print('에러 계산 완료')
+                eY      = tmp.sum(axis = 0) + tmpDC
+                e       = (self.data[0] - eY)**2
+                self.e  = np.sqrt(e.sum())
+                self.draw(6,[t], [eY])
+                print('에러 계산 완료')
         else:
             tmpDC = []
             i = 0
@@ -653,4 +664,4 @@ if __name__ == '__main__':
     fuck.genSgnl(7042)
     fuck.slctGenIntrvl(_inptDC = [244])
     
-    #fuck.getError()
+    fuck.getError()
