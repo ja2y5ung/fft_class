@@ -125,8 +125,8 @@ class windowform1():
         self.text_label_input(self.frame1,self.label1,self.text)
 
         self.error_message = tk.StringVar(self.error_messageframe)
-        self.error_message.set("Error = None")
-        self.text_label_input(self.error_messageframe,self.label1,self.error_message,15)
+        self.error_message.set(" ")
+        self.text_label_input(self.error_messageframe,self.label1,self.error_message,12)
 
         self.window.mainloop()
         
@@ -256,6 +256,7 @@ class windowform1():
         for textbox2 in self.list3:
             exp_list.append(float(textbox2.get()))
         self.work.getIntrvl(start_end_list,exp_list)
+        self.error_message.set(self.work.errMsg)
 ##        self.fileMenu2.entryconfig(2,state = "normal")
             
     def range_select(self):
@@ -337,6 +338,7 @@ class windowform1():
             exp_list.append(float(ex_textbox.get()))
 
         self.work.slctIntrvl(start_end_list,exp_list)
+        self.error_message.set(self.work.errMsg)
         
         self.fileMenu2.entryconfig(2,state = "normal")
         self.widget_clear(self.empty_frame2)
@@ -423,6 +425,7 @@ class windowform1():
 
         self.work.clcFft()
         self.work.slctFft(start_end_list2,exp_list2)
+        self.error_message.set(self.work.errMsg)
         
         self.fileMenu2.entryconfig(2,state = "normal")
         self.empty_frame3 = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
@@ -440,6 +443,7 @@ class windowform1():
         self.widget_clear(self.sample_rg_frame)
         
         self.work.genSgnl(int(self.sample_box2.get()))
+        self.error_message.set(self.work.errMsg)
         self.empty_frame4 = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
         self.empty_frame4.pack(side="top",fill = 'x')       
         self.nb_sample_rg_frame = tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
@@ -516,8 +520,14 @@ class windowform1():
 
         self.ipdc.set(dc_list)
         
-        self.work.slctGenIntrvl(start_end_list3, dc_list)
-        self.errorgrframe = tkinter.Frame(self.sampleframe, width=300, height = 20)
+        if self.choice.get() == 1:
+            self.work.slctGenIntrvl(dc_list)
+            print(1)
+        elif self.choice.get() == 2:
+            self.work.slctGenIntrvl(start_end_list3, dc_list)
+            print(2)
+        self.error_message.set(self.work.errMsg)
+        self.errorgrframe = tkinter.Frame(self.sample_rg_frame, width=300, height = 20)
         self.errorgrframe.pack(side = "top",fill = 'x')
   
         self.fileMenu.entryconfig(1,state = "normal")
