@@ -164,7 +164,7 @@ class fuckMe:
                 p   = self.fig3.add_subplot(2, cntIntrvl, 1 + i//cntIntrvl + cntIntrvl + i)
                 plt .cla()
                 p   .stem(self.ampLst[i], markerfmt = 'none')
-                
+                plt.grid(True)
             # 주파수계열에서 선택된 갯수
             for i in range(cnt):
                 k   = cnt // cntIntrvl
@@ -173,7 +173,7 @@ class fuckMe:
                 p   .set_ylabel('|∠X(P)|')
                 p   .stem(_x[i], _y[i], linefmt = 'orange', markerfmt = 'none')
 
-            plt.grid(True)
+                plt.grid(True)
             self.fig3.tight_layout()
             self.fig3.show()
 
@@ -347,10 +347,6 @@ class fuckMe:
         cntIntrvl       = len(self.ampLst)
         cntIntrvlFft    = len(_scale) // cntIntrvl
 
-        if cntIntrvl != len(_scale):
-            print('입력의 짝이 맞지 않음')
-            self.errorMasage = '입력 부족, 빈칸에 정수로 입력해주세요.'
-            return -1
 
             
 
@@ -366,7 +362,7 @@ class fuckMe:
                 srt = int(_intrvl[i*cntIntrvlFft*2 + 2*j])
                 end = int(_intrvl[i*cntIntrvlFft*2 + 2*j + 1])
 
-                if end-srt == 0 or srt > end or end > end - srt:
+                if end-srt == 0 or srt > end:
                     print('입력한 값이 범위를 초과했거나 반대로 입력함')
                     self.errMsg = '입력 범위 오류, 값이 초과했거나 반대로 입력 또는 구분자 ","를 확인 해주세요'
                     return -1
@@ -474,12 +470,7 @@ class fuckMe:
         p   = fig.add_subplot(1,1,1)
 
         self.errMsg = ''
-        
-        # 입력이 완전하지 안은 경우
-        if len(_intrvl)//2 != len(_inptDC):
-            print('입력 값이 짝이 맞지 않음')
-            self.errMsg = '입력 범위 오류, 값이 초과했거나 반대로 입력 또는 구분자 ","를 확인 해주세요'
-            return -1
+
 
         # 범위 입력이 잘못된 경우
         cnt = len(_intrvl) // 2
@@ -659,7 +650,7 @@ if __name__ == '__main__':
 
     fuck.slctIntrvl([0,2500])
     fuck.slctFft([0,2500//2], [1])
-    fuck.genSgnl(6000)
-    fuck.slctGenIntrvl([0,300,900,1000],[244,280])
+    #fuck.genSgnl(6000)
+    #fuck.slctGenIntrvl([0,300,900,1000],[244,280])
     
-    fuck.getError()
+    #fuck.getError()
