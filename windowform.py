@@ -496,8 +496,7 @@ class windowform1():
                 self.label_input(self.rg_sample_list[j],self.label8," ","left")
                 self.rg_sample_list[j].pack(side="top",fill = 'x')
                 self.dc_sample_list.append(dc_box)
-            self.label_input(self.sample_rg_frame,self.label8,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
-            self.label_input(self.sample_rg_frame,self.label8,"○ 0~" + str(self.work.cntGenSmpl) +" 사이로 입력해주세요.","top")
+            self.label_input(self.sample_rg_frame,self.label8,"○ DC값을 입력 해주세요.","top")
 
             self.sample_rg_buttonframe=tkinter.Frame(self.sample_rg_frame, width=300, height = 350)
             self.sample_rg_buttonframe.pack(side="bottom")  
@@ -521,11 +520,12 @@ class windowform1():
         self.ipdc.set(dc_list)
         
         if self.choice.get() == 1:
-            self.work.slctGenIntrvl(dc_list)
-            print(1)
+            print(dc_list)
+            self.work.slctGenIntrvl(_inptDC = dc_list)
+
         elif self.choice.get() == 2:
             self.work.slctGenIntrvl(start_end_list3, dc_list)
-            print(2)
+
         self.error_message.set(self.work.errMsg)
         self.errorgrframe = tkinter.Frame(self.sample_rg_frame, width=300, height = 20)
         self.errorgrframe.pack(side = "top",fill = 'x')
