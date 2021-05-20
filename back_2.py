@@ -489,8 +489,8 @@ class fuckMe:
 
         if cntInptDC == 1:
             #Result
-            tmp     = np.linspace(0, len(t), len(t), endpoint = False )
-            res[:]  = tmp
+            #tmp     = np.linspace(0, len(t), len(t), endpoint = False )
+            res[:]  = _inptDC
             self.Y  = self.tmpY.reshape(len(t)) + res
             self.draw(5,[t], [self.Y])
         elif cntInptDC != 1:
@@ -650,7 +650,7 @@ if __name__ == '__main__':
 
     fuck.slctIntrvl([0,2500])
     fuck.slctFft([0,2500//2], [1])
-    #fuck.genSgnl(6000)
-    #fuck.slctGenIntrvl([0,300,900,1000],[244,280])
+    fuck.genSgnl(7042)
+    fuck.slctGenIntrvl(_inptDC = [244])
     
     #fuck.getError()
