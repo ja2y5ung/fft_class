@@ -16,7 +16,7 @@ Frequency   = 0.2
 VRT         = 1000
 HRZ         = 1000
 
-class fuckMe:
+class back:
 
     oFile       = 0
     oData       = 0
@@ -511,8 +511,6 @@ class fuckMe:
             self.draw(5,[t], [self.Y])
 
         
-        
-
 
 
 
@@ -590,8 +588,6 @@ class fuckMe:
         
 
         #Result
-        
-        breakpoint()
         if len(self.DCvalue) // self.lngth == 0:
 
             if len(self.DCvalue) == 0:
@@ -632,36 +628,38 @@ class fuckMe:
             self.draw(6,[t], [eY])
             print('에러 계산 완료')
 
-        
+
+    def saveFile(self, _path):
+        np.savetxt(_path,self.Y)
          
 
 
 
 if __name__ == '__main__':
 
-    fuck = fuckMe()
-    fuck.loadFile()
-    fuck.slctData()
-    fuck.initData()
-    fuck.showData()
+    back = back()
+    back.loadFile()
+    back.slctData()
+    back.initData()
+    back.showData()
 
-    #fuck.slctIntrvl([0,1000,4000,5000],[1,1])
-    #fuck.slctFft([0,100,1000,2000,0,200,1000,4000], [1,1,1,1])
+    #back.slctIntrvl([0,1000,4000,5000],[1,1])
+    #back.slctFft([0,100,1000,2000,0,200,1000,4000], [1,1,1,1])
     
-    #fuck.slctIntrvl([0,5000,  10000,20000,  6000,7000],[1,1,1])
-    #fuck.slctFft([0,100,1000,2000,  0,200,1000,4000,  0,100,300,500], [1,1,  1,1,  1,1])
+    #back.slctIntrvl([0,5000,  10000,20000,  6000,7000],[1,1,1])
+    #back.slctFft([0,100,1000,2000,  0,200,1000,4000,  0,100,300,500], [1,1,  1,1,  1,1])
 
-    #fuck.slctIntrvl([0,12800], [1])
-    #fuck.slctFft([0,12800//2], [1])
-    #fuck.genSgnl(12800)
+    #back.slctIntrvl([0,12800], [1])
+    #back.slctFft([0,12800//2], [1])
+    #back.genSgnl(12800)
 
-    #fuck.slctIntrvl([0,14400],[1])
-    #fuck.slctFft([0,14400//2], [1])
-    #fuck.genSgnl(14400)
+    #back.slctIntrvl([0,14400],[1])
+    #back.slctFft([0,14400//2], [1])
+    #back.genSgnl(14400)
 
-    fuck.slctIntrvl([0,2500])
-    fuck.slctFft([0,2500//2], [1])
-    fuck.genSgnl(7042)
-    fuck.slctGenIntrvl(_inptDC = [244])
+    back.slctIntrvl([0,2500])
+    back.slctFft([0,2500//2], [1])
+    back.genSgnl(7042)
+    back.slctGenIntrvl(_inptDC = [244])
     
-    fuck.getError()
+    back.getError()
