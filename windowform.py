@@ -6,7 +6,7 @@ from tkinter import filedialog
 from ttkwidgets.frames import ScrolledFrame
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
 from matplotlib.figure import Figure
-from back2 import fuckMe
+from back_2 import fuckMe
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -210,8 +210,6 @@ class windowform1():
         self.work.slctData([self.num])
         self.work.initData()
         self.work.showData()
-
-        self.widget_clear(self.frame2)
         self.widget_clear(self.scrollframe1)
 
         self.dc.set(self.work.mean)
@@ -224,9 +222,7 @@ class windowform1():
         self.widget_clear(self.frame5)
         self.widget_clear(self.frame6)
 ##        self.fileMenu2.entryconfig(1,state = "disable")
-        
-    def canvas_clear(self, canvas):
-        canvas.get_tk_widget().forget()
+    
 
     def widget_clear(self, widget):
         widget.pack_forget()
@@ -400,7 +396,6 @@ class windowform1():
             
         self.label_input(self.hzSlctframe,self.label7,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
         for i in range(len(self.work.maxIntrvl)):
-            self.label_input(self.hzSlctframe,self.label7,"○ " + chr(i+65) + " : 0~" + str(self.work.maxIntrvl[i]//2) +" 사이로 입력해주세요.","top")
             self.label_input(self.hzSlctframe,self.label7,"○ " + chr(i+65) + " : 0~" + str(self.work.maxIntrvl[i]) +" 사이로 입력해주세요.","top")
  
         self.buttonframe3=tkinter.Frame(self.hzSlctframe, width=300, height = 350)
@@ -438,22 +433,15 @@ class windowform1():
         self.sampleframe = tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
         self.sampleframe.pack(side = "top",fill = 'x')
         self.sample_box2 = self.text_input(self.sampleframe, self.sample_label, " ● 샘플 갯수 입력  ",10,"top","top")
-        self.inputdc_box = self.text_input(self.sampleframe, self.sample_label, " ● Input DC Value  ",10,"top","top")
         self.button_input(self.sampleframe,"입   력",self.num_range_sample,10,"bottom")        
 
     def num_range_sample(self):
-        self.button_input(self.sampleframe,"입   력",self.num_range_sample,10,"bottom")        
 
-    def num_range_sample(self):
         self.widget_clear(self.empty_frame4)
         self.widget_clear(self.nb_sample_rg_frame)
         self.widget_clear(self.empty_frame5)
         self.widget_clear(self.sample_rg_frame)
         
-
-        self.work.genSgnl(int(self.sample_box2.get()), int(self.inputdc_box.get()))
-        self.ipdc.set(int(self.inputdc_box.get()))
-
         self.work.genSgnl(int(self.sample_box2.get()))
         self.error_message.set(self.work.errMsg)
         self.empty_frame4 = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
@@ -461,8 +449,6 @@ class windowform1():
         self.nb_sample_rg_frame = tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
         self.nb_sample_rg_frame.pack(side = "top",fill = 'x')
 
-
-        self.nb_sample_box = self.text_input(self.nb_sample_rg_frame,self.label8,"  ● 샘플 범위 갯수 입력 (1 or 2 입력)   ",10,"top","top")
         self.label_input(self.nb_sample_rg_frame,self.label8," ● 샘플 범위(선택) ","top")
         self.radio1 = tk.Radiobutton(self.nb_sample_rg_frame, text = "모든 구간", variable = self.choice, value = 1).pack(side='top')
         self.radio2 = tk.Radiobutton(self.nb_sample_rg_frame, text = "3구간으로 분할", variable = self.choice, value = 2).pack(side='top')
@@ -481,17 +467,6 @@ class windowform1():
         self.sample_rg_frame = tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
         self.sample_rg_frame.pack(side = "top",fill = 'x')
         self.label_input(self.sample_rg_frame, self.label8," ● 샘플 범위 입력  ","top")
-        if int(self.nb_sample_box.get()) == 1:
-            nb_smp_range = 1
-        elif int(self.nb_sample_box.get()) == 2:
-            nb_smp_range = 2
-
-        if nb_smp_range == 2:
-            for i in range(nb_smp_range):
-                rng_sample_frame = tkinter.Frame(self.sample_rg_frame, width=300, height = 350)
-                self.rg_sample_list.append(rng_sample_frame)
-            for j in range(nb_smp_range):
-
 
         if self.choice.get() == 2:
             for i in range(int(self.choice.get())):
@@ -511,19 +486,6 @@ class windowform1():
             self.sample_rg_buttonframe=tkinter.Frame(self.sample_rg_frame, width=300, height = 350)
             self.sample_rg_buttonframe.pack(side="bottom")  
             self.button_input(self.sample_rg_buttonframe,"입   력",self.sample_choice,10,"left")
-
-        elif nb_smp_range == 1:
-            for i in range(nb_smp_range):
-                rng_sample_frame = tkinter.Frame(self.sample_rg_frame, width=300, height = 350)
-                self.rg_sample_list.append(rng_sample_frame)
-            for j in range(nb_smp_range):
-                self.label_input(self.sample_rg_frame,self.label8,"- " + chr(j+65) + " section - ","top")
-                dc_box = self.text_input2(self.rg_sample_list[j], self.rg_sample_list[j], self.label8,"  D C : ",10,"left","left")
-                self.label_input(self.rg_sample_list[j],self.label8," ","left")
-                self.rg_sample_list[j].pack(side="top",fill = 'x')
-                self.dc_sample_list.append(dc_box)
-            self.label_input(self.sample_rg_frame,self.label8,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
-            self.label_input(self.sample_rg_frame,self.label8,"○ 0~" + str(self.work.cntGenSmpl) +" 사이로 입력해주세요.","top")
         elif self.choice.get() == 1:
             for i in range(int(self.choice.get())):
                 rng_sample_frame = tkinter.Frame(self.sample_rg_frame, width=300, height = 350)
@@ -534,7 +496,6 @@ class windowform1():
                 self.rg_sample_list[j].pack(side="top",fill = 'x')
                 self.dc_sample_list.append(dc_box)
             self.label_input(self.sample_rg_frame,self.label8,"○ DC값을 입력 해주세요.","top")
-
 
             self.sample_rg_buttonframe=tkinter.Frame(self.sample_rg_frame, width=300, height = 350)
             self.sample_rg_buttonframe.pack(side="bottom")  
@@ -554,8 +515,7 @@ class windowform1():
 
         if len(start_end_list3) < 1:
             start_end_list3.append(0)
-        print(start_end_list3)
-        print(dc_list)
+
         self.ipdc.set(dc_list)
         
         if self.choice.get() == 1:
