@@ -591,7 +591,6 @@ class fuckMe:
 
         #Result
         
-        breakpoint()
         if len(self.DCvalue) // self.lngth == 0:
 
             if len(self.DCvalue) == 0:
