@@ -6,7 +6,7 @@ from tkinter import filedialog
 from ttkwidgets.frames import ScrolledFrame
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
 from matplotlib.figure import Figure
-from back_2 import fuckMe
+from back_2 import back
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -29,7 +29,7 @@ class windowform1():
     button = 0
 
     def __init__(self):
-        self.work = fuckMe()
+        self.work = back()
         
         self.window = tk.Tk()
         self.window.title('control')
