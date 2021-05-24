@@ -655,9 +655,9 @@ if __name__ == '__main__':
     #back.slctFft([0,14400//2], [1])
     #back.genSgnl(14400)
 
-    back.slctIntrvl([0,2500])
-    back.slctFft([0,2500//2], [1])
-    back.genSgnl(7042)
-    back.slctGenIntrvl(_inptDC = [244])
+    #back.slctIntrvl([0,2500])
+    #back.slctFft([0,2500//2], [1])
+    #back.genSgnl(7042)
+    #back.slctGenIntrvl(_inptDC = [244])
     
-    back.getError()
+    #back.getError()
