@@ -178,7 +178,7 @@ class windowform1():
         
     def save_file(self):
 
-        self.filename2 = filedialog.asksaveasfilename(initialdir = "E:/Images", title = "경로 선택",
+        self.filename2 = filedialog.asksaveasfilename(initialdir = "E:/Images", title = "경로 선택", initialfile = self.combobox.get().split(' ')[1],
                                                filetypes = (("txt files", "*.txt"), ("all files", "*.*")))
         self.work.saveFile(self.filename2)
 
