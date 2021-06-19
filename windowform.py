@@ -177,8 +177,9 @@ class windowform1():
         self.fileMenu.entryconfig(0,state = "disable")
         
     def save_file(self):
-
-        self.filename2 = filedialog.asksaveasfilename(initialdir = "E:/Images", title = "경로 선택", initialfile = self.combobox.get().split(' ')[1],
+        default = self.combobox.get().split(' ')[1]
+        default_name = default[1:len(default)-1]
+        self.filename2 = filedialog.asksaveasfilename(initialdir = "E:/Images", title = "경로 선택", initialfile = default_name,
                                                filetypes = (("txt files", "*.txt"), ("all files", "*.*")))
         self.work.saveFile(self.filename2)
 
