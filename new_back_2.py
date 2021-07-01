@@ -463,7 +463,7 @@ class back:
         print('신호 생성 완료')
 
 
-    def slctGenIntrvl(self, _intrvl = [0,200,2200,2500], _inptDC = [0,2], click_num = 0):
+    def slctGenIntrvl(self, _intrvl = [0,200,2200,2500], _inptDC = [0,2], click_num = 0, axis_min = 0,axis_max = 500):
         fig = plt.figure('test')
         p   = fig.add_subplot(1,1,1)
 
@@ -523,7 +523,9 @@ class back:
             res[end:]       = _inptDC[1]
 
             plt.plot(res)
+            plt.ylim(axis_min, axis_max)
             x = plt.ginput(click_num)
+
             plt.show()
 
 
