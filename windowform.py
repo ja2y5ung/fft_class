@@ -272,7 +272,7 @@ class windowform1():
 
         self.frame5=tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
         self.frame5.pack(side="top",fill = 'x')
-        self.text_box = self.text_input(self.frame5,self.label3,"  ● 시계열 범위 갯수 입력 (1이상 정수만 입력)   ",10,"top","top")
+        self.text_box = self.text_input(self.frame5,self.label3,"  ● 시계열 분할 갯수 입력 (1이상 정수만 입력)   ",10,"top","top")
         self.buttonframe=tkinter.Frame(self.frame5, width=300, height = 350)
         self.buttonframe.pack(side="bottom")        
         self.button_input(self.buttonframe,"입   력",self.number_range,10,"left")
@@ -358,7 +358,7 @@ class windowform1():
         self.hzrempty_frame.pack(side="top",fill = 'x')
         self.hzrangeSlctframe=tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
         self.hzrangeSlctframe.pack(side="top",fill = 'x')
-        self.text_box2 = self.text_input(self.hzrangeSlctframe,self.label3,"  ● 주파수 범위 갯수 입력 (1이상 정수만 입력) >  ",10,"top","top")
+        self.text_box2 = self.text_input(self.hzrangeSlctframe,self.label3,"  ● 주파수 분할 갯수 입력 (1이상 정수만 입력) >  ",10,"top","top")
         self.hzrbuttonframe=tkinter.Frame(self.hzrangeSlctframe, width=300, height = 350)
         self.hzrbuttonframe.pack(side="bottom")        
         self.button_input(self.hzrbuttonframe,"입   력",self.hz_range,10,"left")        
@@ -565,6 +565,7 @@ class windowform1():
         self.button_input(self.errorgrframe,"에러 그래프",self.error_graph,10,"bottom")
         self.fileMenu2.entryconfig(2,state = "normal")        
     def error_graph(self):
+        print(self.sample_box2.get())
         self.work.getError()
         self.er.set(self.work.e)
         
