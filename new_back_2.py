@@ -463,7 +463,7 @@ class back:
         print('신호 생성 완료')
 
 
-    def slctGenIntrvl(self, _intrvl = [0,200,2200,2500], _inptDC = [0,2] ):
+    def slctGenIntrvl(self, _intrvl = [0,200,2200,2500], _inptDC = [0,2], click_num = 0):
         fig = plt.figure('test')
         p   = fig.add_subplot(1,1,1)
 
@@ -485,31 +485,47 @@ class back:
 
         cntInptDC = len(_inptDC)
 
-        if cntInptDC == 1:
-            #Result
-            #tmp     = np.linspace(0, len(t), len(t), endpoint = False )
-            res[:]  = _inptDC
-            self.DCvalue = []
-            self.inptDC = _inptDC
-            self.Y  = self.tmpY.reshape(len(t)) + res
-            self.draw(5,[t], [self.Y])
-        elif cntInptDC != 1:
+        if click_num == 0:
+            if cntInptDC == 1:  
+                #Result
+                #tmp     = np.linspace(0, len(t), len(t), endpoint = False )
+                res[:]  = _inptDC
+                self.DCvalue = []
+                self.inptDC = _inptDC
+                self.Y  = self.tmpY.reshape(len(t)) + res
+                self.draw(5,[t], [self.Y])
+            elif cntInptDC != 1:
+                srt = _intrvl[1]
+                end = _intrvl[2]
+            
+                tmp             = np.linspace(_inptDC[0], _inptDC[1], end-srt, endpoint = False)
+                res[:srt]       = tmp[0]
+                res[srt:end]    = tmp
+                res[end:]       = tmp[-1]
+
+                #Result
+                self.DCvalue = res
+                self.Y = self.tmpY.reshape(len(t)) + res
+                self.inptDC = _inptDC
+                self.draw(5,[t], [self.Y])
+
+                
+                
+        if click_num > 0:
             srt = _intrvl[1]
             end = _intrvl[2]
-        
+
             tmp             = np.linspace(_inptDC[0], _inptDC[1], end-srt, endpoint = False)
 
-            
-
-            
+ 
             res[:srt]       = _inptDC[0]
-##            res[srt:end]    = tmp
+            res[srt:end]    = tmp
             res[end:]       = _inptDC[1]
 
             plt.plot(res)
-            x = plt.ginput(4)
+            x = plt.ginput(click_num)
             plt.show()
-            print("clicked", x)
+
 
             _start = _inptDC[0]
             
@@ -521,14 +537,19 @@ class back:
                     
                 elif i == len(x)-1:
                     _end            = x[i][1]
-                    tmp             =  np.linspace(_start, _end, end-int(x[i][0]), endpoint = False)
+                    tmp             =  np.linspace(_start, _end, int(x[i][0])-int(x[i-1][0]), endpoint = False)
+                    res[int(x[i-1][0]) : int(x[i][0])]    = tmp
+                    
+                    tmp             =  np.linspace(_end, _inptDC[1], end-int(x[i][0]), endpoint = False)
                     res[int(x[i][0]) : end]    = tmp
+
                 else:
                     _end            = x[i][1]
-                    tmp             =  np.linspace(_start, _end, int(x[i+1][0])-int(x[i][0]), endpoint = False)
-                    res[int(x[i][0]) : int(x[i+1][0])]    = tmp
-                    
-            breakpoint()
+                    tmp             =  np.linspace(_start, _end, int(x[i][0])-int(x[i-1][0]), endpoint = False)
+                    res[int(x[i-1][0]) : int(x[i][0])]    = tmp
+
+                _start = _end
+                
                     
             
             #Result
@@ -657,6 +678,8 @@ class back:
 
 
     def saveFile(self, _path):
+
+
         np.savetxt(_path,self.Y)
          
 
