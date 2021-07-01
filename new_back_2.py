@@ -677,10 +677,13 @@ class back:
             print('에러 계산 완료')
 
 
-    def saveFile(self, _path):
+    def saveFile(self, _path,tag_name):
 
+        tag_name = np.array(tag_name)
+        
+        self.data = np.append(tag_name, self.Y)
 
-        np.savetxt(_path,self.Y)
+        np.savetxt(_path, self.data, fmt = '%s')
          
 
 
@@ -713,3 +716,4 @@ if __name__ == '__main__':
     back.slctGenIntrvl(_intrvl = [0,200,2200,2500],_inptDC = [244,300])
     
     back.getError()
+    

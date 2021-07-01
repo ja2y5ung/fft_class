@@ -181,7 +181,7 @@ class windowform1():
         default_name = default[1:len(default)-1]
         self.filename2 = filedialog.asksaveasfilename(initialdir = "E:/Images", title = "경로 선택", initialfile = default_name,
                                                filetypes = (("txt files", "*.txt"), ("all files", "*.*")))
-        self.work.saveFile(self.filename2)
+        self.work.saveFile(self.filename2, default_name)
 
     def exit_file(self):
         self.window.quit()
