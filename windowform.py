@@ -506,6 +506,10 @@ class windowform1():
             
         elif self.choice.get() == 3:
             self.click_num = self.text_input2(self.sample_rg_frame, self.sample_rg_frame, self.label8," - 클릭할 수 - ",10,"top","top")
+
+            self.axis_min = self.text_input2(self.sample_rg_frame, self.sample_rg_frame, self.label8," Y축 최소값 ",10,"top","top")
+            self.axis_max = self.text_input2(self.sample_rg_frame, self.sample_rg_frame, self.label8," Y축 최대값 ",10,"top","top")
+
             
             for i in range(2):
                 rng_sample_frame = tkinter.Frame(self.sample_rg_frame, width=300, height = 350)
@@ -551,7 +555,7 @@ class windowform1():
             self.work.slctGenIntrvl(start_end_list3, dc_list)
 
         elif self.choice.get() == 3:
-            self.work.slctGenIntrvl(start_end_list3, dc_list, int(self.click_num.get()))
+            self.work.slctGenIntrvl(start_end_list3, dc_list, int(self.click_num.get()),int(self.axis_min.get()),int(self.axis_max.get()))
 
         self.error_message.set(self.work.errMsg)
         self.errorgrframe = tkinter.Frame(self.sample_rg_frame, width=300, height = 20)
