@@ -178,7 +178,7 @@ class windowform1():
     def save_file(self):
         default = self.combobox.get().split(' ')[1]
         default_name = default[1:len(default)-1]
-        self.filename2 = filedialog.asksaveasfilename(initialdir = "E:/Images", title = "경로 선택", initialfile = default_name,
+        self.filename2 = filedialog.asksaveasfilename(initialdir = "E:/Images", title = "경로 선택", initialfile = default_name+'.csv',
                                                filetypes = (("txt files", "*.txt"), ("all files", "*.*")))
         self.work.saveFile(self.filename2, default_name)
 
@@ -572,7 +572,6 @@ class windowform1():
                                     np.int32(self.click_num.get()),\
                                     np.int32(self.yaxis_list[0].get()),\
                                     np.int32(self.yaxis_list[1].get()))
-            breakpoint()
 
         self.error_message.set(self.work.errMsg)
         self.errorgrframe = tkinter.Frame(self.sample_rg_frame, width=300, height = 20)
