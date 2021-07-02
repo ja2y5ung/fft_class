@@ -566,11 +566,13 @@ class windowform1():
             self.work.slctGenIntrvl(start_end_list3, dc_list)
 
         elif self.choice.get() == 3:
-            self.work.slctGenIntrvl([0,1,int(self.sample_box2.get())-1,int(self.sample_box2.get())],\
-                                    minmax_list,\
-                                    int(self.click_num.get()),\
-                                    int(self.yaxis_list[0].get()),\
-                                    int(self.yaxis_list[1].get()))
+
+            start_end_list4 = [0,1,np.int32(self.sample_box2.get())-1,np.int32(self.sample_box2.get())]
+            self.work.slctGenIntrvl(start_end_list4, minmax_list,\
+                                    np.int32(self.click_num.get()),\
+                                    np.int32(self.yaxis_list[0].get()),\
+                                    np.int32(self.yaxis_list[1].get()))
+            breakpoint()
 
         self.error_message.set(self.work.errMsg)
         self.errorgrframe = tkinter.Frame(self.sample_rg_frame, width=300, height = 20)
