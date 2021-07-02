@@ -468,7 +468,7 @@ class back:
         p   = fig.add_subplot(1,1,1)
 
         self.errMsg = ''
-
+        
 
         # 범위 입력이 잘못된 경우
         cnt = len(_intrvl) // 2
@@ -512,6 +512,8 @@ class back:
                 
                 
         if click_num > 0:
+
+            
             srt = _intrvl[1]
             end = _intrvl[2]
 
@@ -694,7 +696,7 @@ if __name__ == '__main__':
 
     back = back()
     back.loadFile()
-    back.slctData(_num = [1])
+    back.slctData(_num = [14])
     back.initData()
     back.showData()
 
@@ -715,7 +717,10 @@ if __name__ == '__main__':
     back.slctIntrvl([0,2500])
     back.slctFft([0,2500//2], [1])
     back.genSgnl(2500)
-    back.slctGenIntrvl(_intrvl = [0,200,2200,2500],_inptDC = [244,300])
+    back.slctGenIntrvl(_intrvl = [0,1,2499,2500],_inptDC = [58261075,58261075],\
+                        click_num = 5, axis_min = 58200000,axis_max = 58401500)
+
+
     
     back.getError()
     
