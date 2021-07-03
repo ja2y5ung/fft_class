@@ -83,9 +83,6 @@ class windowform1():
         #dc 상태 프레임
         self.dcframe=tkinter.Frame(self.scrollframe2.interior, width=300, height = 100)
         self.dcframe.pack(side="top")
-        #dc 상태 프레임
-        self.inpdcframe=tkinter.Frame(self.scrollframe2.interior, width=300, height = 100)
-        self.inpdcframe.pack(side="top")        
         #sampling rate 상태 프레임
         self.srframe=tkinter.Frame(self.scrollframe2.interior, width=300, height = 100)
         self.srframe.pack(side="top")
@@ -97,7 +94,10 @@ class windowform1():
         self.spframe.pack(side="top")
         #frequancy 프레임
         self.freframe=tkinter.Frame(self.scrollframe2.interior, width=300, height = 100)
-        self.freframe.pack(side="top")        
+        self.freframe.pack(side="top")
+        #dc 상태 프레임
+        self.inpdcframe=tkinter.Frame(self.scrollframe2.interior, width=300, height = 100)
+        self.inpdcframe.pack(side="top")   
         #샘플 선택 프레임
         self.sampleframe=tkinter.Frame(self.topframe, width=300, height = 100)
         #샘플 범위 프레임
