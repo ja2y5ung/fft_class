@@ -555,7 +555,7 @@ class windowform1():
 
         minmax_list = []
         for k in range(len(self.dc_sample_list)):
-            minmax_list.append(int(self.dc_sample_list[k].get()))
+            minmax_list.append(float(self.dc_sample_list[k].get()))
 
         
         if self.choice.get() == 1:
