@@ -252,7 +252,7 @@ class back:
         else:
             end = self.oLngth
             t   = np.linspace(0, end, end, endpoint = False)
-##            self.draw(1, [t], [self.oData[0] + self.oMean[0]])
+            self.draw(1, [t], [self.oData[0] + self.oMean[0]])
 
 
             
@@ -294,7 +294,7 @@ class back:
         self.intrvl = _intrvl#시계열 선택된 범위
         self.intrvlData = array(tmpData[1:])#선택된 범위 안에 있는 데이터
         self.maxIntrvl = maxIntrvl
-##        self.draw(2, tmpT, tmpData)
+        self.draw(2, tmpT, tmpData)
         
         # 다음 실행될 메서드
         self.clcFft()
@@ -333,7 +333,7 @@ class back:
         self.ampLst = resAmp#시계열 선택된 각 구간의 amp들
         self.phsLst = resPhs#시계열 선택된 각 구간의 phs들
 
-##        self.draw(3, tmpCut, tmpData)
+        self.draw(3, tmpCut, tmpData)
 
 
         
@@ -373,7 +373,7 @@ class back:
                 # result
                 self.ampLst[i][srt:end] = self.ampLst[i][srt:end]*_scale[i*cntIntrvlFft+j]#주파수 범위에서 선택된 amp들만 증폭
 
-##        self.draw(4, tmpCut, tmpAmp)
+        self.draw(4, tmpCut, tmpAmp)
 
 
         
@@ -458,7 +458,7 @@ class back:
         self.Y = tmp.sum(axis=0) + _inptDC#
         self.cntGenSmpl = _cntGenSmpl
         self.tmpY = np.copy(self.Y)
-##        self.draw(5, [t], [self.Y])
+        self.draw(5, [t], [self.Y])
         
         print('신호 생성 완료')
 
