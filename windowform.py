@@ -83,9 +83,6 @@ class windowform1():
         #dc 상태 프레임
         self.dcframe=tkinter.Frame(self.scrollframe2.interior, width=300, height = 100)
         self.dcframe.pack(side="top")
-        #dc 상태 프레임
-        self.inpdcframe=tkinter.Frame(self.scrollframe2.interior, width=300, height = 100)
-        self.inpdcframe.pack(side="top")        
         #sampling rate 상태 프레임
         self.srframe=tkinter.Frame(self.scrollframe2.interior, width=300, height = 100)
         self.srframe.pack(side="top")
@@ -97,7 +94,10 @@ class windowform1():
         self.spframe.pack(side="top")
         #frequancy 프레임
         self.freframe=tkinter.Frame(self.scrollframe2.interior, width=300, height = 100)
-        self.freframe.pack(side="top")        
+        self.freframe.pack(side="top")
+        #dc 상태 프레임
+        self.inpdcframe=tkinter.Frame(self.scrollframe2.interior, width=300, height = 100)
+        self.inpdcframe.pack(side="top")   
         #샘플 선택 프레임
         self.sampleframe=tkinter.Frame(self.topframe, width=300, height = 100)
         #샘플 범위 프레임
@@ -328,112 +328,137 @@ class windowform1():
 
 
     def hz_range_num(self):
-        start_end_list,exp_list = [], []
-        for textbox in self.list1:
-            a = list(map(int, textbox.get().split(',')))
-            for i in a:
-                start_end_list.append(i)
-                
-        for ex_textbox in self.list3:
-            exp_list.append(float(ex_textbox.get()))
 
-        self.work.slctIntrvl(start_end_list,exp_list)
-        self.error_message.set(self.work.errMsg)
-        
-        self.fileMenu2.entryconfig(2,state = "normal")
-        self.widget_clear(self.empty_frame2)
-        self.widget_clear(self.hzSlctframe)
-        self.widget_clear(self.hzrangeSlctframe)
-        self.widget_clear(self.buttonframe2)
-        self.widget_clear(self.empty_frame3)
-        self.widget_clear(self.sampleframe)
-        self.widget_clear(self.hzrempty_frame)
-        self.widget_clear(self.empty_frame4)
-        self.widget_clear(self.nb_sample_rg_frame)
-        self.widget_clear(self.empty_frame5)
-        self.widget_clear(self.sample_rg_frame)        
-        
-        self.hzrempty_frame = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
-        self.hzrempty_frame.pack(side="top",fill = 'x')
-        self.hzrangeSlctframe=tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
-        self.hzrangeSlctframe.pack(side="top",fill = 'x')
-        self.text_box2 = self.text_input(self.hzrangeSlctframe,self.label3,"  ● 주파수 분할 갯수 입력 (1이상 정수만 입력) >  ",10,"top","top")
-        self.hzrbuttonframe=tkinter.Frame(self.hzrangeSlctframe, width=300, height = 350)
-        self.hzrbuttonframe.pack(side="bottom")        
-        self.button_input(self.hzrbuttonframe,"입   력",self.hz_range,10,"left")        
-        self.buttonframe2=tkinter.Frame(self.frame6, width=300, height = 350)
-        self.buttonframe2.pack(side="bottom")              
-        self.button_input(self.buttonframe2,"범위 리셋",self.number_range,10,"left")
+        for i in range(int(self.text_box.get())):
+            if self.list1[i].get() == '' or self.list3[i].get() == '':
+                tr = 1
+                break
+            else:
+                tr = 0
+        if tr == 0:
+            start_end_list,exp_list = [], []
+            for textbox in self.list1:
+                a = list(map(int, textbox.get().split(',')))
+                for i in a:
+                    start_end_list.append(i)
+                    
+            for ex_textbox in self.list3:
+                exp_list.append(float(ex_textbox.get()))
 
-    def hz_range(self):
-        self.widget_clear(self.hzSlctframe)
-        self.widget_clear(self.empty_frame2)
-        self.widget_clear(self.hzrbuttonframe)
-        self.widget_clear(self.empty_frame3)
-        self.widget_clear(self.sampleframe)
-        self.chrcount = 0;self.chlistcount = 0
-        
-        self.hzlist1,self.hzlist2,self.hzlist3 = [], [], []
-        self.empty_frame2 = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
-        self.empty_frame2.pack(side="top",fill = 'x')
-        self.hzSlctframe=tkinter.Frame(self.scrollframe.interior, width=300, height = 350)
-        self.hzSlctframe.pack(side="top",fill = 'x')
-        self.label_input(self.hzSlctframe,self.label6," ● 주파수 범위 입력  ","top")        
-        for i in range( int(self.text_box.get())*int(self.text_box2.get()) ):
-            rng_exp_frame2=tkinter.Frame(self.hzSlctframe, width=300, height = 350)
-            self.hzlist2.append(rng_exp_frame2)
-        for j in range( int(self.text_box.get())):
-            for k in range(int(self.text_box2.get())):
-                self.label_input(self.hzSlctframe,self.label6,"- " + chr(self.chrcount+65) + " section - ","top")
-                rng_box2 = self.text_input2(self.hzlist2[self.chlistcount], self.hzlist2[self.chlistcount], self.label6," 범위 : ",10,"left","left")
-                exp_box2 = self.text_input2(self.hzlist2[self.chlistcount], self.hzlist2[self.chlistcount], self.label6,"   확대 비율 : ",10,"left","left")
-                self.label_input(self.hzlist2[self.chlistcount],self.label6," ","left")
-                self.hzlist3.append(exp_box2)
-                self.hzlist2[self.chlistcount].pack(side="top",fill = 'x')
-                self.hzlist1.append(rng_box2)
-                self.chlistcount += 1
-            self.chrcount+=1
+            self.work.slctIntrvl(start_end_list,exp_list)
+            self.error_message.set(self.work.errMsg)
             
-        self.label_input(self.hzSlctframe,self.label7,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
-        for i in range(len(self.work.maxIntrvl)):
-            self.label_input(self.hzSlctframe,self.label7,"○ " + chr(i+65) + " : 0~" + str(self.work.maxIntrvl[i]) +" 사이로 입력해주세요.","top")
- 
-        self.buttonframe3=tkinter.Frame(self.hzSlctframe, width=300, height = 350)
-        self.buttonframe3.pack(side="bottom")  
-        self.button_input(self.buttonframe3,"입   력",self.confirm2,10,"left")
-   
-        self.hzrbuttonframe=tkinter.Frame(self.hzrangeSlctframe, width=300, height = 350)
-        self.hzrbuttonframe.pack(side="bottom")              
-        self.button_input(self.hzrbuttonframe,"갯수 리셋",self.hz_range_num,10,"left")
+            self.fileMenu2.entryconfig(2,state = "normal")
+            self.widget_clear(self.empty_frame2)
+            self.widget_clear(self.hzSlctframe)
+            self.widget_clear(self.hzrangeSlctframe)
+            self.widget_clear(self.buttonframe2)
+            self.widget_clear(self.empty_frame3)
+            self.widget_clear(self.sampleframe)
+            self.widget_clear(self.hzrempty_frame)
+            self.widget_clear(self.empty_frame4)
+            self.widget_clear(self.nb_sample_rg_frame)
+            self.widget_clear(self.empty_frame5)
+            self.widget_clear(self.sample_rg_frame)        
+            
+            self.hzrempty_frame = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
+            self.hzrempty_frame.pack(side="top",fill = 'x')
+            self.hzrangeSlctframe=tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
+            self.hzrangeSlctframe.pack(side="top",fill = 'x')
+            self.text_box2 = self.text_input(self.hzrangeSlctframe,self.label3,"  ● 주파수 분할 갯수 입력 (1이상 정수만 입력) >  ",10,"top","top")
+            self.hzrbuttonframe=tkinter.Frame(self.hzrangeSlctframe, width=300, height = 350)
+            self.hzrbuttonframe.pack(side="bottom")        
+            self.button_input(self.hzrbuttonframe,"입   력",self.hz_range,10,"left")        
+            self.buttonframe2=tkinter.Frame(self.frame6, width=300, height = 350)
+            self.buttonframe2.pack(side="bottom")              
+            self.button_input(self.buttonframe2,"범위 리셋",self.number_range,10,"left")
+        elif tr == 1:
+            pass
+        
+    def hz_range(self):
+
+        if self.text_box2.get() != '':
+        
+            self.widget_clear(self.hzSlctframe)
+            self.widget_clear(self.empty_frame2)
+            self.widget_clear(self.hzrbuttonframe)
+            self.widget_clear(self.empty_frame3)
+            self.widget_clear(self.sampleframe)
+            self.chrcount = 0;self.chlistcount = 0
+            
+            self.hzlist1,self.hzlist2,self.hzlist3 = [], [], []
+            self.empty_frame2 = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
+            self.empty_frame2.pack(side="top",fill = 'x')
+            self.hzSlctframe=tkinter.Frame(self.scrollframe.interior, width=300, height = 350)
+            self.hzSlctframe.pack(side="top",fill = 'x')
+            self.label_input(self.hzSlctframe,self.label6," ● 주파수 범위 입력  ","top")        
+            for i in range( int(self.text_box.get())*int(self.text_box2.get()) ):
+                rng_exp_frame2=tkinter.Frame(self.hzSlctframe, width=300, height = 350)
+                self.hzlist2.append(rng_exp_frame2)
+            for j in range( int(self.text_box.get())):
+                for k in range(int(self.text_box2.get())):
+                    self.label_input(self.hzSlctframe,self.label6,"- " + chr(self.chrcount+65) + " section - ","top")
+                    rng_box2 = self.text_input2(self.hzlist2[self.chlistcount], self.hzlist2[self.chlistcount], self.label6," 범위 : ",10,"left","left")
+                    exp_box2 = self.text_input2(self.hzlist2[self.chlistcount], self.hzlist2[self.chlistcount], self.label6,"   확대 비율 : ",10,"left","left")
+                    self.label_input(self.hzlist2[self.chlistcount],self.label6," ","left")
+                    self.hzlist3.append(exp_box2)
+                    self.hzlist2[self.chlistcount].pack(side="top",fill = 'x')
+                    self.hzlist1.append(rng_box2)
+                    self.chlistcount += 1
+                self.chrcount+=1
+                
+            self.label_input(self.hzSlctframe,self.label7,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
+            for i in range(len(self.work.maxIntrvl)):
+                self.label_input(self.hzSlctframe,self.label7,"○ " + chr(i+65) + " : 0~" + str(self.work.maxIntrvl[i]) +" 사이로 입력해주세요.","top")
+     
+            self.buttonframe3=tkinter.Frame(self.hzSlctframe, width=300, height = 350)
+            self.buttonframe3.pack(side="bottom")  
+            self.button_input(self.buttonframe3,"입   력",self.confirm2,10,"left")
+       
+            self.hzrbuttonframe=tkinter.Frame(self.hzrangeSlctframe, width=300, height = 350)
+            self.hzrbuttonframe.pack(side="bottom")              
+            self.button_input(self.hzrbuttonframe,"갯수 리셋",self.hz_range_num,10,"left")
+        else:
+            pass
         
     def confirm2(self):
-        self.widget_clear(self.empty_frame3)
-        self.widget_clear(self.sampleframe)
-        self.widget_clear(self.empty_frame4)
-        self.widget_clear(self.nb_sample_rg_frame)
-        self.widget_clear(self.empty_frame5)
-        self.widget_clear(self.sample_rg_frame)
-      
-        
-        start_end_list2, exp_list2 = [], []
-        for textbox in self.hzlist1:
-            a = list(map(int, textbox.get().split(',')))
-            for i in a:
-                start_end_list2.append(i)
-        for textbox2 in self.hzlist3:
-            exp_list2.append(float(textbox2.get()))
 
-        self.work.clcFft()
-        self.work.slctFft(start_end_list2,exp_list2)
-        self.error_message.set(self.work.errMsg)
-        
-        self.fileMenu2.entryconfig(2,state = "normal")
-        self.empty_frame3 = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
-        self.empty_frame3.pack(side="top",fill = 'x')        
-        self.sampleframe = tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
-        self.sampleframe.pack(side = "top",fill = 'x')
-        self.sample_box2 = self.text_input(self.sampleframe, self.sample_label, " ● 샘플 갯수 입력  ",10,"top","top")
-        self.button_input(self.sampleframe,"입   력",self.num_range_sample,10,"bottom")        
+        for i in range(int(self.text_box.get())):
+            if self.hzlist1[i].get() == '' or self.hzlist3[i].get() == '':
+                tr = 1
+                break
+            else:
+                tr = 0
+        if tr == 0:
+            self.widget_clear(self.empty_frame3)
+            self.widget_clear(self.sampleframe)
+            self.widget_clear(self.empty_frame4)
+            self.widget_clear(self.nb_sample_rg_frame)
+            self.widget_clear(self.empty_frame5)
+            self.widget_clear(self.sample_rg_frame)
+          
+            
+            start_end_list2, exp_list2 = [], []
+            for textbox in self.hzlist1:
+                a = list(map(int, textbox.get().split(',')))
+                for i in a:
+                    start_end_list2.append(i)
+            for textbox2 in self.hzlist3:
+                exp_list2.append(float(textbox2.get()))
+
+            self.work.clcFft()
+            self.work.slctFft(start_end_list2,exp_list2)
+            self.error_message.set(self.work.errMsg)
+            
+            self.fileMenu2.entryconfig(2,state = "normal")
+            self.empty_frame3 = tkinter.Frame(self.scrollframe.interior, width=300, height = 20)
+            self.empty_frame3.pack(side="top",fill = 'x')        
+            self.sampleframe = tkinter.Frame(self.scrollframe.interior, width=300, height = 150)
+            self.sampleframe.pack(side = "top",fill = 'x')
+            self.sample_box2 = self.text_input(self.sampleframe, self.sample_label, " ● 생성할 신호 샘플 갯수 입력  ",10,"top","top")
+            self.button_input(self.sampleframe,"입   력",self.num_range_sample,10,"bottom")
+        elif tr == 1:
+            pass
 
     def num_range_sample(self):
 
@@ -555,7 +580,7 @@ class windowform1():
 
         minmax_list = []
         for k in range(len(self.dc_sample_list)):
-            minmax_list.append(int(self.dc_sample_list[k].get()))
+            minmax_list.append(float(self.dc_sample_list[k].get()))
 
         
         if self.choice.get() == 1:
